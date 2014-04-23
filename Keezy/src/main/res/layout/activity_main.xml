@@ -7,23 +7,13 @@
     <LinearLayout android:layout_width="match_parent"
                   android:layout_weight="1"
                   android:layout_height="0dp">
-        <Button android:id="@+id/button1"
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button1"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
-        <Button android:id="@+id/button2"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
-    </LinearLayout>
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_weight="1"
-                  android:layout_height="0dp">
-        <Button android:id="@+id/button3"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
-        <Button android:id="@+id/button4"
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button2"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
@@ -31,11 +21,13 @@
     <LinearLayout android:layout_width="match_parent"
                   android:layout_weight="1"
                   android:layout_height="0dp">
-        <Button android:id="@+id/button5"
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button3"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
-        <Button android:id="@+id/button6"
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button4"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
@@ -43,11 +35,27 @@
     <LinearLayout android:layout_width="match_parent"
                   android:layout_weight="1"
                   android:layout_height="0dp">
-        <Button android:id="@+id/button7"
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button5"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
-        <Button android:id="@+id/button8"
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button6"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_weight="1"
+                  android:layout_height="0dp">
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button7"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"/>
+        <com.pengrad.keezy.ui.RecPlayButton
+                android:id="@+id/button8"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"/>
