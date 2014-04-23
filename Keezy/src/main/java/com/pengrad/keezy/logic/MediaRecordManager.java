@@ -1,0 +1,60 @@
+package com.pengrad.keezy.logic;
+
+import android.media.MediaRecorder;
+
+import java.io.IOException;
+
+/**
+ * User: stas
+ * Date: 22.03.14 4:43
+ */
+
+public class MediaRecordManager implements RecordManager {
+
+    private MediaRecorder[] recorders;
+
+    public MediaRecordManager(int size) {
+        recorders = new MediaRecorder[size];
+        for (int i = 0; i < size; i++) {
+            recorders[i] = new MediaRecorder();
+        }
+    }
+
+    public void startRecord(int index, String path) throws IOException {
+        MediaRecorder recorder = recorders[index];
+        try {
+            recorder.setOutputFile(path);
+            recorder.prepare();
+            recorder.start();
+        } catch (IllegalStateException e) {
+            prepareRecord(recorder);
+            recorder.setOutputFile(path);
+            recorder.prepare();
+            recorder.start();
+        }
+    }
+
+    public void stopRecord(int index) {
+        MediaRecorder recorder = recorders[index];
+        try {
+            recorder.stop();
+        } catch (IllegalStateException e) {
+            // before start
+        } catch (RuntimeException e) {
+            // immediately after start
+        } finally {
+            prepareRecord(recorder);
+        }
+    }
+
+    private void prepareRecord(MediaRecorder recorder) {
+        recorder.reset();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setAudioChannels(2);
+        recorder.setAudioEncodingBitRate(320000);
+        recorder.setAudioSamplingRate(96000);
+    }
+
+}
