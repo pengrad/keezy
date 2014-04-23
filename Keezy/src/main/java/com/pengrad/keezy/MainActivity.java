@@ -1,7 +1,6 @@
 package com.pengrad.keezy;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.MotionEvent;
@@ -94,48 +93,6 @@ public class MainActivity extends Activity implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_OUTSIDE:
-                view.setPressed(false);
-                break;
-        }
-    }
-
-
-    Record record = new Record("");
-    Record1 record1 = new Record1("");
-
-    @Touch
-    protected void button6Touched(View view, MotionEvent event) {
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                try {
-                    record.start();
-                } catch (IOException e) {
-                    log(e.toString());
-                }
-                view.setPressed(true);
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_OUTSIDE:
-                record.stop();
-                view.setPressed(false);
-                break;
-        }
-    }
-
-    @Touch
-    protected void button8Touched(View view, MotionEvent event) {
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                try {
-                    record1.start();
-                } catch (IOException e) {
-                    log(e.toString());
-                }
-                view.setPressed(true);
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_OUTSIDE:
-                record1.stop();
                 view.setPressed(false);
                 break;
         }

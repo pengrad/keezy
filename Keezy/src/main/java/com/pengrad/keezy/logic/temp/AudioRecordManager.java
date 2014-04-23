@@ -1,8 +1,9 @@
-package com.pengrad.keezy.logic;
+package com.pengrad.keezy.logic.temp;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import com.pengrad.keezy.logic.RecordManager;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
