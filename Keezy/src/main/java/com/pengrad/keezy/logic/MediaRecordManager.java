@@ -11,17 +11,13 @@ import java.io.IOException;
 
 public class MediaRecordManager implements RecordManager {
 
-    private MediaRecorder[] recorders;
+    private MediaRecorder recorder;
 
-    public MediaRecordManager(int size) {
-        recorders = new MediaRecorder[size];
-        for (int i = 0; i < size; i++) {
-            recorders[i] = new MediaRecorder();
-        }
+    public MediaRecordManager() {
+        recorder = new MediaRecorder();
     }
 
-    public void startRecord(int index, String path) throws IOException {
-        MediaRecorder recorder = recorders[index];
+    public void startRecord(String path) throws IOException {
         try {
             recorder.setOutputFile(path);
             recorder.prepare();
@@ -34,8 +30,7 @@ public class MediaRecordManager implements RecordManager {
         }
     }
 
-    public void stopRecord(int index) {
-        MediaRecorder recorder = recorders[index];
+    public void stopRecord() {
         try {
             recorder.stop();
         } catch (IllegalStateException e) {

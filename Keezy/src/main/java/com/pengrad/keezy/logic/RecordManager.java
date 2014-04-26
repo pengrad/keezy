@@ -8,8 +8,8 @@ import java.io.IOException;
  */
 public interface RecordManager {
 
-    void startRecord(int index, String path) throws IOException;
+    void startRecord(String path) throws IOException;
 
-    void stopRecord(int index);
+    void stopRecord();
 
 }

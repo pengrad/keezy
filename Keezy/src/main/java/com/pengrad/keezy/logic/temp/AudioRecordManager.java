@@ -32,7 +32,7 @@ public class AudioRecordManager implements RecordManager {
         this.path = path;
     }
 
-    public void startRecord(int i, String path) {
+    public void startRecord(String path) {
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS,
                 RECORDER_AUDIO_ENCODING, BufferElements2Rec * BytesPerElement);
 
@@ -97,7 +97,7 @@ public class AudioRecordManager implements RecordManager {
         }
     }
 
-    public void stopRecord(int i) {
+    public void stopRecord() {
         // stops the recording activity
         if (recorder != null) {
             isRecording = false;
