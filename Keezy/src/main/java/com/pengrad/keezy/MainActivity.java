@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import com.pengrad.keezy.logic.MediaRecordManager;
 import com.pengrad.keezy.logic.PlayManager;
 import com.pengrad.keezy.logic.RecordManager;
@@ -16,12 +15,13 @@ import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.pengrad.keezy.Utils.log;
-import static com.pengrad.keezy.Utils.toast;
 
 /**
  * User: stas
@@ -34,25 +34,33 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     @ViewById
     protected RecPlayButton button1, button2, button3, button4, button5, button6, button7, button8;
 
-    private RecPlayButton[] buttons;
+    private String files[];
+    private List<RecPlayButton> buttons;
     private RecordManager recordManager;
     private PlayManager playManager;
-
-    public static final String FILE_1 = Environment.getExternalStorageDirectory() + "/myaudio.3gp";
-    public static final String FILE_2 = Environment.getExternalStorageDirectory() + "/myaudio2.3gp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         recordManager = new MediaRecordManager();
         playManager = new SoundPoolPlayManager(8);
+        File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
+        if (!folder.exists()) {
+            if (!folder.mkdir()) {
+                log("Can't create folder");
+                //todo Dialog and exit
+            }
+        }
+        files = new String[8];
+        for (int i = 0; i < 8; i++) {
+            files[i] = folder + "/record_" + i + ".3gp";
+        }
     }
 
     @AfterViews
     protected void initViews() {
-        buttons = new RecPlayButton[]{button1, button2, button3, button4, button5, button6, button7, button8};
-        List<Button> b = new ArrayList<Button>();
-        b.indexOf(null);
+        buttons = new ArrayList<RecPlayButton>(8);
+        Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
         for (View button : buttons) {
             button.setOnTouchListener(this);
         }
@@ -61,21 +69,22 @@ public class MainActivity extends Activity implements View.OnTouchListener {
     public boolean onTouch(View view, MotionEvent event) {
         if (!(view instanceof RecPlayButton)) return false;
         RecPlayButton button = (RecPlayButton) view;
+        int index = buttons.indexOf(button);
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 button.setPressed(true);
                 if (button.isRec()) {
                     enableControls(button, false);
-                    rec(true);
+                    startRecord(index);
                 } else {
-                    play(true);
+                    startPlay(index);
                 }
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_OUTSIDE:
                 button.setPressed(false);
                 if (button.isRec()) {
-                    rec(false);
+                    stopRecord(index);
                     enableControls(button, true);
                     button.makePlay();
                 }
@@ -90,31 +99,27 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         }
     }
 
-    protected void rec(boolean start) {
-        toast(this, start ? "start rec" : "stop rec");
-    }
-
-    protected void play(boolean start) {
-        toast(this, start ? "start play" : "stop play");
-    }
-
     @Background
-    protected void startRecording(int i) {
+    protected void startRecord(int i) {
         try {
-            recordManager.startRecord(i == 0 ? FILE_1 : FILE_2);
+            recordManager.startRecord(files[i]);
         } catch (IOException e) {
             log(e.toString());
         }
+        log("start rec");
     }
 
     @Background
-    protected void stopRecording(int i) {
+    protected void stopRecord(int i) {
         recordManager.stopRecord();
-        playManager.addSound(i - 1, i == 0 ? FILE_1 : FILE_2);
+        playManager.addSound(i, files[i]);
+        log("stop rec");
     }
 
+    @Background
     protected void startPlay(int i) {
-        playManager.startPlay(i - 1);
+        playManager.startPlay(i);
+        log("start play");
     }
 
 
