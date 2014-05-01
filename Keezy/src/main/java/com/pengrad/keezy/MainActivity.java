@@ -105,21 +105,20 @@ public class MainActivity extends Activity implements View.OnTouchListener {
             recordManager.startRecord(files[i]);
         } catch (IOException e) {
             log(e.toString());
+        } catch (RuntimeException e) {
+            log(e.toString());
         }
-        log("start rec");
     }
 
     @Background
     protected void stopRecord(int i) {
         recordManager.stopRecord();
         playManager.addSound(i, files[i]);
-        log("stop rec");
     }
 
     @Background
     protected void startPlay(int i) {
         playManager.startPlay(i);
-        log("start play");
     }
 
 
