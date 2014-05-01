@@ -8,4 +8,6 @@
     <color name="button_6">#FF5677</color>
     <color name="button_7">#BB60BF</color>
     <color name="button_8">#54F494</color>
+
+    <color name="black">#000</color>
 </resources>
