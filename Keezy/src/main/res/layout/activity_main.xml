@@ -3,20 +3,45 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <LinearLayout style="@style/RecPlayButtonRow">
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button1" style="@style/RecPlayButton"/>
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button2" style="@style/RecPlayButton"/>
+    <LinearLayout style="@style/ButtonRow">
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button1" android:background="@color/button_1"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button2" android:background="@color/button_2"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout style="@style/RecPlayButtonRow">
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button3" style="@style/RecPlayButton"/>
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button4" style="@style/RecPlayButton"/>
+    <LinearLayout style="@style/ButtonRow">
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button3" android:background="@color/button_3"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button4" android:background="@color/button_4"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout style="@style/RecPlayButtonRow">
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button5" style="@style/RecPlayButton"/>
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button6" style="@style/RecPlayButton"/>
+    <LinearLayout style="@style/ButtonRow">
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button5" android:background="@color/button_5"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button6" android:background="@color/button_6"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
     </LinearLayout>
-    <LinearLayout style="@style/RecPlayButtonRow">
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button7" style="@style/RecPlayButton"/>
-        <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button8" style="@style/RecPlayButton"/>
+    <LinearLayout style="@style/ButtonRow">
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button7" android:background="@color/button_7"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
+        <LinearLayout style="@style/ButtonCell">
+            <com.pengrad.keezy.ui.RecPlayButton android:id="@+id/button8" android:background="@color/button_8"
+                                                style="@style/RecPlayButton"/>
+        </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>
