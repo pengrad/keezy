@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import com.pengrad.keezy.R;
 
 /**
@@ -11,7 +12,7 @@ import com.pengrad.keezy.R;
  * Date: 23.04.14 21:04
  */
 
-public class RecPlayButton extends Button {
+public class RecPlayButton extends ImageView {
 
     public RecPlayButton(Context context) {
         super(context);
