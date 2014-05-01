@@ -1,10 +1,9 @@
 package com.pengrad.keezy;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.MotionEvent;
-import android.view.View;
+import android.support.v7.app.ActionBarActivity;
+import android.view.*;
 import com.pengrad.keezy.logic.MediaRecordManager;
 import com.pengrad.keezy.logic.PlayManager;
 import com.pengrad.keezy.logic.RecordManager;
@@ -29,7 +28,7 @@ import static com.pengrad.keezy.Utils.log;
  */
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends Activity implements View.OnTouchListener {
+public class MainActivity extends ActionBarActivity implements View.OnTouchListener {
 
     @ViewById
     protected RecPlayButton button1, button2, button3, button4, button5, button6, button7, button8;
@@ -54,6 +53,24 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         files = new String[8];
         for (int i = 0; i < 8; i++) {
             files[i] = folder + "/record_" + i + ".3gp";
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                editRecords();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -121,5 +138,7 @@ public class MainActivity extends Activity implements View.OnTouchListener {
         playManager.startPlay(i);
     }
 
+    protected void editRecords() {
 
+    }
 }
