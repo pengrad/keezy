@@ -38,6 +38,8 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
     private RecordManager recordManager;
     private PlayManager playManager;
 
+    private MenuItem menuEdit, menuDone;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,8 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+        menuEdit = menu.findItem(R.id.action_edit);
+        menuDone = menu.findItem(R.id.action_done);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -67,7 +71,10 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                editRecords();
+                startEdit();
+                return true;
+            case R.id.action_done:
+                endEdit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -110,7 +117,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         return true;
     }
 
-    private void enableControls(View view, boolean enable) {
+    protected void enableControls(View view, boolean enable) {
         for (View button : buttons) {
             if (button.getId() != view.getId()) button.setEnabled(enable);
         }
@@ -138,7 +145,30 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         playManager.startPlay(i);
     }
 
-    protected void editRecords() {
+    protected void startEdit() {
+        menuEdit.setVisible(false);
+        menuDone.setVisible(true);
+        for (RecPlayButton button : buttons) {
+            button.makeEdit();
+            button.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View view, MotionEvent event) {
+                    RecPlayButton button = (RecPlayButton) view;
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_DOWN:
+                            button.makeRemove();
+                    }
+                    return true;
+                }
+            });
+        }
+    }
 
+    protected void endEdit() {
+        menuDone.setVisible(false);
+        menuEdit.setVisible(true);
+        for (RecPlayButton button : buttons) {
+            button.endEdit();
+            button.setOnTouchListener(this);
+        }
     }
 }

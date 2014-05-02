@@ -32,11 +32,30 @@ public class RecPlayButton extends ImageView {
     private int padding;
     private boolean recording;
     private Drawable imageRecord;
+    private Drawable imageRemove;
 
     private void init() {
         recording = true;
         padding = getResources().getDimensionPixelSize(R.dimen.button_press_padding);
         imageRecord = getResources().getDrawable(R.drawable.ic_recording);
+        imageRemove = getResources().getDrawable(R.drawable.ic_remove);
+    }
+
+    @Override
+    public void setPressed(boolean pressed) {
+        super.setPressed(pressed);
+        int padding = pressed ? this.padding : 0;
+        ((View) getParent()).setPadding(padding, padding, padding, padding);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        getBackground().setAlpha(enabled ? 255 : 150);
+    }
+
+    public boolean isRec() {
+        return recording;
     }
 
     public void makeRec() {
@@ -49,13 +68,24 @@ public class RecPlayButton extends ImageView {
         setImageDrawable(null);
     }
 
-    public boolean isRec() {
-        return recording;
+    public void makeEdit() {
+        if (recording) {
+            setEnabled(false);
+            setImageDrawable(null);
+        } else {
+            setImageDrawable(imageRemove);
+        }
     }
 
-    public void setPressed(boolean pressed) {
-        super.setPressed(pressed);
-        int padding = pressed ? this.padding : 0;
-        ((View) getParent()).setPadding(padding, padding, padding, padding);
+    public void makeRemove() {
+        recording = true;
+        setImageDrawable(null);
+        setEnabled(false);
     }
+
+    public void endEdit() {
+        if (!isEnabled()) setEnabled(true);
+        setImageDrawable(recording ? imageRecord : null);
+    }
+
 }
