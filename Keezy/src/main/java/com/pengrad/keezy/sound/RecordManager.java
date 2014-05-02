@@ -1,4 +1,4 @@
-package com.pengrad.keezy.logic;
+package com.pengrad.keezy.sound;
 
 import java.io.IOException;
 

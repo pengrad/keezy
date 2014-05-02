@@ -1,4 +1,4 @@
-package com.pengrad.keezy.logic.temp;
+package com.pengrad.keezy.sound.temp;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;

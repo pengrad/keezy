@@ -29,6 +29,9 @@ public class RecPlayButton extends ImageView {
         init();
     }
 
+    public static final int ALPHA_FULL = 255;
+    public static final int ALPHA_SEMI = 150;
+
     private int padding;
     private boolean recording;
     private Drawable imageRecord;
@@ -51,7 +54,7 @@ public class RecPlayButton extends ImageView {
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        getBackground().setAlpha(enabled ? 255 : 150);
+        getBackground().setAlpha(enabled ? ALPHA_FULL : ALPHA_SEMI);
     }
 
     public boolean isRec() {

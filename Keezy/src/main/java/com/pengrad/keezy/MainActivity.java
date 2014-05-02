@@ -3,11 +3,14 @@ package com.pengrad.keezy;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.*;
-import com.pengrad.keezy.logic.MediaRecordManager;
-import com.pengrad.keezy.logic.PlayManager;
-import com.pengrad.keezy.logic.RecordManager;
-import com.pengrad.keezy.logic.SoundPoolPlayManager;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import com.pengrad.keezy.sound.MediaRecordManager;
+import com.pengrad.keezy.sound.PlayManager;
+import com.pengrad.keezy.sound.RecordManager;
+import com.pengrad.keezy.sound.SoundPoolPlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.pengrad.keezy.TouchListener.Callback;
 import static com.pengrad.keezy.Utils.log;
 
 /**
@@ -28,7 +32,7 @@ import static com.pengrad.keezy.Utils.log;
  */
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends ActionBarActivity implements View.OnTouchListener {
+public class MainActivity extends ActionBarActivity {
 
     @ViewById
     protected RecPlayButton button1, button2, button3, button4, button5, button6, button7, button8;
@@ -37,8 +41,8 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
     private List<RecPlayButton> buttons;
     private RecordManager recordManager;
     private PlayManager playManager;
-
     private MenuItem menuEdit, menuDone;
+    private TouchListener editTouchListener, recordListener, playListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,34 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         for (int i = 0; i < 8; i++) {
             files[i] = folder + "/record_" + i + ".3gp";
         }
+
+        editTouchListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
+            public void onTouchDown(RecPlayButton view) {
+                onEditTouchDown(view);
+            }
+
+            public void onTouchUp(RecPlayButton view) {
+            }
+        });
+
+        recordListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
+            public void onTouchDown(RecPlayButton view) {
+                onRecDown(view);
+            }
+
+            public void onTouchUp(RecPlayButton view) {
+                onRecUp(view);
+            }
+        });
+
+        playListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
+            public void onTouchDown(RecPlayButton view) {
+                onPlayDown(view);
+            }
+
+            public void onTouchUp(RecPlayButton view) {
+            }
+        });
     }
 
     @Override
@@ -86,40 +118,32 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         buttons = new ArrayList<RecPlayButton>(8);
         Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
         for (View button : buttons) {
-            button.setOnTouchListener(this);
+            button.setOnTouchListener(recordListener);
         }
     }
 
-    public boolean onTouch(View view, MotionEvent event) {
-        if (!(view instanceof RecPlayButton)) return false;
-        RecPlayButton button = (RecPlayButton) view;
+    public void onRecDown(RecPlayButton button) {
         int index = buttons.indexOf(button);
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                button.setPressed(true);
-                if (button.isRec()) {
-                    enableControls(button, false);
-                    startRecord(index);
-                } else {
-                    startPlay(index);
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_OUTSIDE:
-                button.setPressed(false);
-                if (button.isRec()) {
-                    stopRecord(index);
-                    enableControls(button, true);
-                    button.makePlay();
-                }
-                break;
-        }
-        return true;
+        disableOtherButtons(button, false);
+        startRecord(index);
     }
 
-    protected void enableControls(View view, boolean enable) {
+    public void onRecUp(RecPlayButton button) {
+        int index = buttons.indexOf(button);
+        stopRecord(index);
+        disableOtherButtons(button, true);
+        button.makePlay();
+        button.setOnTouchListener(playListener);
+    }
+
+    public void onPlayDown(RecPlayButton button) {
+        int index = buttons.indexOf(button);
+        startPlay(index);
+    }
+
+    protected void disableOtherButtons(View enabledView, boolean enable) {
         for (View button : buttons) {
-            if (button.getId() != view.getId()) button.setEnabled(enable);
+            if (button.getId() != enabledView.getId()) button.setEnabled(enable);
         }
     }
 
@@ -150,17 +174,12 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         menuDone.setVisible(true);
         for (RecPlayButton button : buttons) {
             button.makeEdit();
-            button.setOnTouchListener(new View.OnTouchListener() {
-                public boolean onTouch(View view, MotionEvent event) {
-                    RecPlayButton button = (RecPlayButton) view;
-                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                        case MotionEvent.ACTION_DOWN:
-                            button.makeRemove();
-                    }
-                    return true;
-                }
-            });
+            button.setOnTouchListener(editTouchListener);
         }
+    }
+
+    public void onEditTouchDown(RecPlayButton button) {
+        button.makeRemove();
     }
 
     protected void endEdit() {
@@ -168,7 +187,7 @@ public class MainActivity extends ActionBarActivity implements View.OnTouchListe
         menuEdit.setVisible(true);
         for (RecPlayButton button : buttons) {
             button.endEdit();
-            button.setOnTouchListener(this);
+            button.setOnTouchListener(button.isRec() ? recordListener : playListener);
         }
     }
 }

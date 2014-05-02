@@ -1,6 +1,4 @@
-package com.pengrad.keezy.logic;
-
-import java.io.File;
+package com.pengrad.keezy.sound;
 
 /**
  * User: stas
