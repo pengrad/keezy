@@ -1,6 +1,5 @@
 package com.pengrad.keezy;
 
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -12,10 +11,7 @@ import com.pengrad.keezy.sound.PlayManager;
 import com.pengrad.keezy.sound.RecordManager;
 import com.pengrad.keezy.sound.SoundPoolPlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +40,8 @@ public class MainActivity extends ActionBarActivity {
     private MenuItem menuEdit, menuDone;
     private TouchListener editTouchListener, recordListener, playListener;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @AfterViews
+    protected void initViews() {
         recordManager = new MediaRecordManager();
         playManager = new SoundPoolPlayManager(8);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
@@ -63,10 +58,10 @@ public class MainActivity extends ActionBarActivity {
 
         editTouchListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
-                onEditTouchDown(view);
             }
 
             public void onTouchUp(RecPlayButton view) {
+                onEditTouchUp(view);
             }
         });
 
@@ -88,6 +83,11 @@ public class MainActivity extends ActionBarActivity {
             public void onTouchUp(RecPlayButton view) {
             }
         });
+        buttons = new ArrayList<RecPlayButton>(8);
+        Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
+        for (View button : buttons) {
+            button.setOnTouchListener(recordListener);
+        }
     }
 
     @Override
@@ -110,15 +110,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @AfterViews
-    protected void initViews() {
-        buttons = new ArrayList<RecPlayButton>(8);
-        Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
-        for (View button : buttons) {
-            button.setOnTouchListener(recordListener);
         }
     }
 
@@ -178,7 +169,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void onEditTouchDown(RecPlayButton button) {
+    public void onEditTouchUp(RecPlayButton button) {
         button.makeRemove();
     }
 

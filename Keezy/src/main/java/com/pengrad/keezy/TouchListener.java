@@ -37,6 +37,9 @@ public class TouchListener<T> implements View.OnTouchListener {
                 view.setPressed(false);
                 callback.onTouchUp(tView);
                 break;
+            case MotionEvent.ACTION_CANCEL:
+                view.setPressed(false);
+                break;
         }
         return true;
     }
