@@ -11,10 +11,7 @@ import com.pengrad.keezy.sound.PlayManager;
 import com.pengrad.keezy.sound.RecordManager;
 import com.pengrad.keezy.sound.SoundPoolPlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,16 +28,19 @@ import static com.pengrad.keezy.Utils.log;
  */
 
 @EActivity(R.layout.activity_main)
+@OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
     @ViewById
     protected RecPlayButton button1, button2, button3, button4, button5, button6, button7, button8;
 
+    @OptionsMenuItem
+    protected MenuItem menuEdit, menuDone;
+
     private String files[];
     private List<RecPlayButton> buttons;
     private RecordManager recordManager;
     private PlayManager playManager;
-    private MenuItem menuEdit, menuDone;
     private TouchListener editTouchListener, recordListener, playListener;
 
     @AfterViews
@@ -87,26 +87,23 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        menuEdit = menu.findItem(R.id.action_edit);
-        menuDone = menu.findItem(R.id.action_done);
-        return super.onCreateOptionsMenu(menu);
+    @OptionsItem(R.id.menu_edit)
+    protected void startEdit() {
+        menuEdit.setVisible(false);
+        menuDone.setVisible(true);
+        for (RecPlayButton button : buttons) {
+            button.makeEdit();
+            button.setOnTouchListener(editTouchListener);
+        }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_edit:
-                startEdit();
-                return true;
-            case R.id.action_done:
-                endEdit();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    @OptionsItem(R.id.menu_done)
+    protected void endEdit() {
+        menuDone.setVisible(false);
+        menuEdit.setVisible(true);
+        for (RecPlayButton button : buttons) {
+            button.endEdit();
+            button.setOnTouchListener(button.isRec() ? recordListener : playListener);
         }
     }
 
@@ -127,6 +124,10 @@ public class MainActivity extends ActionBarActivity {
     public void onPlayDown(RecPlayButton button) {
         int index = buttons.indexOf(button);
         startPlay(index);
+    }
+
+    public void onEditTouchUp(RecPlayButton button) {
+        button.makeRemove();
     }
 
     protected void disableOtherButtons(View enabledView, boolean enable) {
@@ -155,27 +156,5 @@ public class MainActivity extends ActionBarActivity {
     @Background
     protected void startPlay(int i) {
         playManager.startPlay(i);
-    }
-
-    protected void startEdit() {
-        menuEdit.setVisible(false);
-        menuDone.setVisible(true);
-        for (RecPlayButton button : buttons) {
-            button.makeEdit();
-            button.setOnTouchListener(editTouchListener);
-        }
-    }
-
-    public void onEditTouchUp(RecPlayButton button) {
-        button.makeRemove();
-    }
-
-    protected void endEdit() {
-        menuDone.setVisible(false);
-        menuEdit.setVisible(true);
-        for (RecPlayButton button : buttons) {
-            button.endEdit();
-            button.setOnTouchListener(button.isRec() ? recordListener : playListener);
-        }
     }
 }
