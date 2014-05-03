@@ -43,19 +43,17 @@ public class MainActivity extends ActionBarActivity {
 
     @AfterViews
     protected void initViews() {
+        final int size = 8;
         recordManager = new MediaRecordManager();
-        playManager = new SoundPoolPlayManager(8);
+        playManager = new SoundPoolPlayManager(size);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
-        if (!folder.exists()) {
-            if (!folder.mkdir()) {
-                log("Can't create folder");
-                //todo Dialog and exit
-            }
+        if (!folder.exists() && !folder.mkdir()) {
+            log("Can't create folder");
+            //todo Dialog and exit
         }
-        files = new String[8];
-        for (int i = 0; i < 8; i++) {
-            files[i] = folder + "/record_" + i + ".3gp";
-        }
+        files = new String[size];
+        for (int i = 0; i < size; i++) files[i] = folder + "/record_" + i + ".3gp";
+
 
         Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
@@ -66,13 +64,11 @@ public class MainActivity extends ActionBarActivity {
                 onRecUp(view);
             }
         };
-
         Callback<RecPlayButton> playCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
                 onPlayDown(view);
             }
         };
-
         Callback<RecPlayButton> editCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
                 onEditDown(view);
@@ -85,9 +81,7 @@ public class MainActivity extends ActionBarActivity {
 
         buttons = new ArrayList<RecPlayButton>(8);
         Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
-        for (View button : buttons) {
-            button.setOnTouchListener(recordListener);
-        }
+        for (View button : buttons) button.setOnTouchListener(recordListener);
     }
 
     @OptionsItem(R.id.menu_edit)
