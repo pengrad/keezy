@@ -10,10 +10,12 @@ import android.view.View;
 
 public class TouchListener<T> implements View.OnTouchListener {
 
-    public static interface Callback<V> {
-        void onTouchDown(V view);
+    public abstract static class Callback<V> {
+        void onTouchDown(V view) {
+        }
 
-        void onTouchUp(V view);
+        void onTouchUp(V view) {
+        }
     }
 
     private Callback<T> callback;
