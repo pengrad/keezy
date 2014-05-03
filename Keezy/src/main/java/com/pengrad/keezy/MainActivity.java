@@ -2,8 +2,6 @@ package com.pengrad.keezy;
 
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import com.pengrad.keezy.sound.MediaRecordManager;
@@ -59,13 +57,7 @@ public class MainActivity extends ActionBarActivity {
             files[i] = folder + "/record_" + i + ".3gp";
         }
 
-        editTouchListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
-            public void onTouchUp(RecPlayButton view) {
-                onEditTouchUp(view);
-            }
-        });
-
-        recordListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
+        Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
                 onRecDown(view);
             }
@@ -73,13 +65,24 @@ public class MainActivity extends ActionBarActivity {
             public void onTouchUp(RecPlayButton view) {
                 onRecUp(view);
             }
-        });
+        };
 
-        playListener = new TouchListener<RecPlayButton>(RecPlayButton.class, new Callback<RecPlayButton>() {
+        Callback<RecPlayButton> playCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
                 onPlayDown(view);
             }
-        });
+        };
+
+        Callback<RecPlayButton> editCallback = new Callback<RecPlayButton>() {
+            public void onTouchDown(RecPlayButton view) {
+                onEditDown(view);
+            }
+        };
+
+        playListener = new TouchListener<RecPlayButton>(RecPlayButton.class, playCallback);
+        recordListener = new TouchListener<RecPlayButton>(RecPlayButton.class, recordCallback);
+        editTouchListener = new TouchListener<RecPlayButton>(RecPlayButton.class, editCallback);
+
         buttons = new ArrayList<RecPlayButton>(8);
         Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
         for (View button : buttons) {
@@ -107,6 +110,12 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    protected void disableOtherButtons(View enabledView, boolean enable) {
+        for (View button : buttons) {
+            if (button.getId() != enabledView.getId()) button.setEnabled(enable);
+        }
+    }
+
     public void onRecDown(RecPlayButton button) {
         int index = buttons.indexOf(button);
         disableOtherButtons(button, false);
@@ -126,14 +135,8 @@ public class MainActivity extends ActionBarActivity {
         startPlay(index);
     }
 
-    public void onEditTouchUp(RecPlayButton button) {
+    public void onEditDown(RecPlayButton button) {
         button.makeRemove();
-    }
-
-    protected void disableOtherButtons(View enabledView, boolean enable) {
-        for (View button : buttons) {
-            if (button.getId() != enabledView.getId()) button.setEnabled(enable);
-        }
     }
 
     @Background

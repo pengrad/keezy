@@ -83,6 +83,7 @@ public class RecPlayButton extends ImageView {
     public void makeRemove() {
         recording = true;
         setImageDrawable(null);
+        if (isPressed()) setPressed(false);
         setEnabled(false);
     }
 
