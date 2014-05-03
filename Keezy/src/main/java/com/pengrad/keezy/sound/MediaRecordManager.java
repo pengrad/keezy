@@ -15,6 +15,7 @@ public class MediaRecordManager implements RecordManager {
 
     public MediaRecordManager() {
         recorder = new MediaRecorder();
+        prepareRecord(recorder);
     }
 
     public synchronized void startRecord(String path) throws IOException {
