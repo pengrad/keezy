@@ -29,17 +29,21 @@ import static com.pengrad.keezy.Utils.log;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
+    public static final String PREFS_ITEM_NAME = "recordsState";
+
+
     @ViewById
     protected RecPlayButton button1, button2, button3, button4, button5, button6, button7, button8;
 
     @OptionsMenuItem
     protected MenuItem menuEdit, menuDone;
 
-    private String files[];
+    private String[] files;
     private List<RecPlayButton> buttons;
     private RecordManager recordManager;
     private PlayManager playManager;
     private TouchListener editTouchListener, recordListener, playListener;
+    private int recordsState;
 
     @AfterViews
     protected void initViews() {
@@ -80,7 +84,26 @@ public class MainActivity extends ActionBarActivity {
 
         buttons = new ArrayList<RecPlayButton>(8);
         Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
-        for (View button : buttons) button.setOnTouchListener(recordListener);
+
+        recordsState = getPreferences(MODE_PRIVATE).getInt(PREFS_ITEM_NAME, 0);
+
+        for (int i = 0; i < buttons.size(); i++) {
+            int buttonBit = (int) Math.pow(2, i);
+            RecPlayButton button = buttons.get(i);
+            if ((recordsState & buttonBit) == buttonBit) {
+                button.makePlay();
+                button.setOnTouchListener(playListener);
+                playManager.addSound(i, files[i]);
+            } else {
+                button.setOnTouchListener(recordListener);
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        getPreferences(MODE_PRIVATE).edit().putInt(PREFS_ITEM_NAME, recordsState).commit();
     }
 
     @OptionsItem(R.id.menu_edit)
@@ -121,6 +144,7 @@ public class MainActivity extends ActionBarActivity {
         disableOtherButtons(button, true);
         button.makePlay();
         button.setOnTouchListener(playListener);
+        recordsState = recordsState | (int) Math.pow(2, index);
     }
 
     public void onPlayDown(RecPlayButton button) {
@@ -130,8 +154,10 @@ public class MainActivity extends ActionBarActivity {
 
     // Remove record, change button state
     public void onEditDown(RecPlayButton button) {
+        int index = buttons.indexOf(button);
         button.makeRemove();
-        playManager.removeSound(buttons.indexOf(button));
+        playManager.removeSound(index);
+        recordsState = recordsState ^ (int) Math.pow(2, index);
     }
 
     @Background
