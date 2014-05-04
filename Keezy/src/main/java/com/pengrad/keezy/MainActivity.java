@@ -54,7 +54,6 @@ public class MainActivity extends ActionBarActivity {
         files = new String[size];
         for (int i = 0; i < size; i++) files[i] = folder + "/record_" + i + ".3gp";
 
-
         Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
                 onRecDown(view);
@@ -129,8 +128,10 @@ public class MainActivity extends ActionBarActivity {
         startPlay(index);
     }
 
+    // Remove record, change button state
     public void onEditDown(RecPlayButton button) {
         button.makeRemove();
+        playManager.removeSound(buttons.indexOf(button));
     }
 
     @Background
