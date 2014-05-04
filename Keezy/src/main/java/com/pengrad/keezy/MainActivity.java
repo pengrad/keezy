@@ -1,9 +1,14 @@
 package com.pengrad.keezy;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.pengrad.keezy.sound.MediaRecordManager;
 import com.pengrad.keezy.sound.PlayManager;
 import com.pengrad.keezy.sound.RecordManager;
@@ -13,6 +18,8 @@ import org.androidannotations.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +37,7 @@ import static com.pengrad.keezy.Utils.log;
 public class MainActivity extends ActionBarActivity {
 
     public static final String PREFS_ITEM_NAME = "recordsState";
-
+    public static final int SIZE = 8;
 
     @ViewById
     protected RecPlayButton button1, button2, button3, button4, button5, button6, button7, button8;
@@ -47,16 +54,42 @@ public class MainActivity extends ActionBarActivity {
 
     @AfterViews
     protected void initViews() {
-        final int size = 8;
-        recordManager = new MediaRecordManager();
-        playManager = new SoundPoolPlayManager(size);
+        try {
+            recordManager = new MediaRecordManager();
+        } catch (Exception e) {
+            final StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            TextView text = new TextView(this);
+            text.setText(sw.toString());
+            new AlertDialog.Builder(this).setTitle("Problem with Hardware").setView(text)
+                    .setNeutralButton("Copy for send", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                clipboard.setPrimaryClip(android.content.ClipData.newPlainText("exception", sw.toString()));
+                            } else {
+                                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                                clipboard.setText(sw.toString());
+                            }
+                            finish();
+                            Toast.makeText(getApplicationContext(), "Text copied, please paste it on Google Play", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        public void onCancel(DialogInterface dialogInterface) {
+                            finish();
+                        }
+                    })
+                    .show();
+        }
+        playManager = new SoundPoolPlayManager(SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
         if (!folder.exists() && !folder.mkdir()) {
             log("Can't create folder");
             //todo Dialog and exit
         }
-        files = new String[size];
-        for (int i = 0; i < size; i++) files[i] = folder + "/record_" + i + ".3gp";
+        files = new String[SIZE];
+        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + ".3gp";
 
         Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
@@ -82,7 +115,7 @@ public class MainActivity extends ActionBarActivity {
         recordListener = new TouchListener<RecPlayButton>(RecPlayButton.class, recordCallback);
         editTouchListener = new TouchListener<RecPlayButton>(RecPlayButton.class, editCallback);
 
-        buttons = new ArrayList<RecPlayButton>(8);
+        buttons = new ArrayList<RecPlayButton>(SIZE);
         Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
 
         recordsState = getPreferences(MODE_PRIVATE).getInt(PREFS_ITEM_NAME, 0);
