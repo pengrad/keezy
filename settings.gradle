@@ -1,1 +1,1 @@
-include ':Keezy'
+include ':Keezy', ':Test'
