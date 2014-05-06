@@ -32,29 +32,37 @@ public class RecPlayButton extends ImageView {
     public static final int ALPHA_FULL = 255;
     public static final int ALPHA_SEMI = 150;
 
-    private int padding;
     private boolean recording;
     private Drawable imageRecord;
     private Drawable imageRemove;
+    private PressedAnimation animation;
 
     private void init() {
         recording = true;
-        padding = getResources().getDimensionPixelSize(R.dimen.button_press_padding);
         imageRecord = getResources().getDrawable(R.drawable.ic_recording);
         imageRemove = getResources().getDrawable(R.drawable.ic_remove);
     }
 
     @Override
-    public void setPressed(boolean pressed) {
-        super.setPressed(pressed);
-        int padding = pressed ? this.padding : 0;
-        ((View) getParent()).setPadding(padding, padding, padding, padding);
+    public void setPressed(final boolean pressed) {
+        if (animation != null) {
+            animation.setPressed(pressed);
+            startAnimation(animation);
+        }
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         getBackground().setAlpha(enabled ? ALPHA_FULL : ALPHA_SEMI);
+    }
+
+    public View getContainer() {
+        return (View) getParent();
+    }
+
+    public void setPressAnimation(PressedAnimation animation) {
+        this.animation = animation;
     }
 
     public boolean isRec() {
@@ -91,5 +99,4 @@ public class RecPlayButton extends ImageView {
         if (!isEnabled()) setEnabled(true);
         setImageDrawable(recording ? imageRecord : null);
     }
-
 }

@@ -31,13 +31,13 @@ public class TouchListener<T> implements View.OnTouchListener {
         T tView = clazz.cast(view);
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
-                view.setPressed(true);
                 callback.onTouchDown(tView);
+                view.setPressed(true);
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_OUTSIDE:
-                view.setPressed(false);
                 callback.onTouchUp(tView);
+                view.setPressed(false);
                 break;
             case MotionEvent.ACTION_CANCEL:
                 view.setPressed(false);

@@ -51,6 +51,7 @@ public class MainActivity extends ActionBarActivity {
     private PlayManager playManager;
     private TouchListener editTouchListener, recordListener, playListener;
     private int recordsState;
+    private AnimationManager animationManager;
 
     @AfterViews
     protected void initViews() {
@@ -120,9 +121,12 @@ public class MainActivity extends ActionBarActivity {
 
         recordsState = getPreferences(MODE_PRIVATE).getInt(PREFS_ITEM_NAME, 0);
 
+        animationManager = new AnimationManager(this);
+
         for (int i = 0; i < buttons.size(); i++) {
             int buttonBit = (int) Math.pow(2, i);
             RecPlayButton button = buttons.get(i);
+            animationManager.setPaddingAnimation(button);
             if ((recordsState & buttonBit) == buttonBit) {
                 button.makePlay();
                 button.setOnTouchListener(playListener);
@@ -145,6 +149,7 @@ public class MainActivity extends ActionBarActivity {
         menuDone.setVisible(true);
         for (RecPlayButton button : buttons) {
             button.makeEdit();
+            button.setPressAnimation(null);
             button.setOnTouchListener(editTouchListener);
         }
     }
@@ -155,6 +160,7 @@ public class MainActivity extends ActionBarActivity {
         menuEdit.setVisible(true);
         for (RecPlayButton button : buttons) {
             button.endEdit();
+            animationManager.setPaddingAnimation(button);
             button.setOnTouchListener(button.isRec() ? recordListener : playListener);
         }
     }
