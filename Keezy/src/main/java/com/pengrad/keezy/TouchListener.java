@@ -32,7 +32,7 @@ public class TouchListener<T> implements View.OnTouchListener {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 callback.onTouchDown(tView);
-                view.setPressed(true);
+                if (view.isEnabled()) view.setPressed(true);
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_OUTSIDE:

@@ -69,17 +69,9 @@ public class RecPlayButton extends ImageView {
     public void makeEdit() {
         if (recording) {
             setEnabled(false);
-            setImageDrawable(null);
         } else {
             setImageDrawable(imageRemove);
         }
-    }
-
-    public void makeRemove() {
-        recording = true;
-        setImageDrawable(null);
-        if (isPressed()) setPressed(false);
-        setEnabled(false);
     }
 
     public void endEdit() {
@@ -87,4 +79,9 @@ public class RecPlayButton extends ImageView {
         setImageDrawable(recording ? imageRecord : null);
     }
 
+    public void makeRemove() {
+        recording = true;
+        setImageDrawable(imageRecord);
+        setEnabled(false);
+    }
 }
