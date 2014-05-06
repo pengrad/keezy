@@ -167,8 +167,8 @@ public class MainActivity extends ActionBarActivity {
 
     public void onRecDown(RecPlayButton button) {
         int index = buttons.indexOf(button);
-        disableOtherButtons(button, false);
         startRecord(index);
+        disableOtherButtons(button, false);
     }
 
     public void onRecUp(RecPlayButton button) {
