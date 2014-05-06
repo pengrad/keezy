@@ -61,11 +61,6 @@ public class RecPlayButton extends ImageView {
         return recording;
     }
 
-    public void makeRec() {
-        recording = true;
-        setImageDrawable(imageRecord);
-    }
-
     public void makePlay() {
         recording = false;
         setImageDrawable(null);
