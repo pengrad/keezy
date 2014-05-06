@@ -92,15 +92,12 @@ public class App extends Activity {
 
                 byte[] buffer = new byte[bufferSize];
                 audioRecord.startRecording();
-                int r = 0;
                 readSum = 0;
                 while (isRecording) {
                     int bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
                     readSum += bufferReadResult;
                     byte[] data = Arrays.copyOfRange(buffer, 0, bufferReadResult);
                     recordList.add(data);
-                    publishProgress(r);
-                    r++;
                 }
                 audioRecord.stop();
                 Log.d("++++++", "Size record: " + readSum);
