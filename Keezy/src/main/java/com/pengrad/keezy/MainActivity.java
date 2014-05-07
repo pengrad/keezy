@@ -202,7 +202,7 @@ public class MainActivity extends ActionBarActivity {
         recordsState = recordsState ^ (int) Math.pow(2, index);
     }
 
-    @Background
+//    @Background
     protected void startRecord(int i) {
         try {
             recordManager.startRecord(files[i]);
@@ -213,7 +213,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    @Background
+//    @Background
     protected void stopRecord(final int i) {
         recordManager.stopRecord(new Runnable() {
             public void run() {
@@ -222,7 +222,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    @Background
+//    @Background
     protected void startPlay(int i) {
         playManager.startPlay(i);
     }
