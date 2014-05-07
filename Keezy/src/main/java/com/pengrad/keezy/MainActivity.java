@@ -9,10 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.pengrad.keezy.sound.MediaRecordManager;
+import com.pengrad.keezy.sound.AudioRecordManager;
+import com.pengrad.keezy.sound.MediaPlayerManager;
 import com.pengrad.keezy.sound.PlayManager;
 import com.pengrad.keezy.sound.RecordManager;
-import com.pengrad.keezy.sound.SoundPoolPlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
@@ -36,7 +36,8 @@ import static com.pengrad.keezy.Utils.log;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
-    public static final String PREFS_ITEM_NAME = "recordsState";
+//    public static final String PREFS_ITEM_NAME = "recordsState";
+    public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
     public static final int SIZE = 8;
 
     @ViewById
@@ -56,7 +57,8 @@ public class MainActivity extends ActionBarActivity {
     @AfterViews
     protected void initViews() {
         try {
-            recordManager = new MediaRecordManager();
+//            recordManager = new MediaRecordManager();
+            recordManager = new AudioRecordManager();
         } catch (Exception e) {
             final StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
@@ -83,14 +85,15 @@ public class MainActivity extends ActionBarActivity {
                     })
                     .show();
         }
-        playManager = new SoundPoolPlayManager(SIZE);
+//        playManager = new SoundPoolPlayManager(SIZE);
+        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
         if (!folder.exists() && !folder.mkdir()) {
             log("Can't create folder");
             //todo Dialog and exit
         }
         files = new String[SIZE];
-        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + ".3gp";
+        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + ".wav";
 
         Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
@@ -211,9 +214,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Background
-    protected void stopRecord(int i) {
-        recordManager.stopRecord();
-        playManager.addSound(i, files[i]);
+    protected void stopRecord(final int i) {
+        recordManager.stopRecord(new Runnable() {
+            public void run() {
+                playManager.addSound(i, files[i]);
+            }
+        });
     }
 
     @Background
