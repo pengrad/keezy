@@ -31,7 +31,7 @@ public class MediaRecordManager implements RecordManager {
         }
     }
 
-    public synchronized void stopRecord() {
+    public synchronized void stopRecord(Runnable endCallback) {
         try {
             recorder.stop();
         } catch (IllegalStateException e) {
@@ -40,6 +40,7 @@ public class MediaRecordManager implements RecordManager {
             // immediately after start
         } finally {
             prepareRecord(recorder);
+            if (endCallback != null) endCallback.run();
         }
     }
 

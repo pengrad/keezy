@@ -10,6 +10,6 @@ public interface RecordManager {
 
     void startRecord(String path) throws IOException;
 
-    void stopRecord();
+    void stopRecord(Runnable endCallback);
 
 }

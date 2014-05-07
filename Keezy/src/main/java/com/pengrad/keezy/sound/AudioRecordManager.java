@@ -26,11 +26,11 @@ public class AudioRecordManager implements RecordManager {
         new Thread(recordAudio).start();
     }
 
-    public void stopRecord() {
+    public void stopRecord(Runnable endCallback) {
+        recordAudio.endCallback = endCallback;
         recordAudio.cancel();
         recordAudio = new RecordAudio();
     }
-
 
     private static class RecordAudio implements Runnable {
         public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
@@ -40,15 +40,11 @@ public class AudioRecordManager implements RecordManager {
         public static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT);
 
         private volatile boolean cancel = false;
+        private volatile Runnable endCallback;
 
         private String file;
         private AudioRecord audioRecord;
         private List<byte[]> recordList;
-
-        public RecordAudio() {
-            audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
-            recordList = new ArrayList<byte[]>();
-        }
 
         public void cancel() {
             cancel = true;
@@ -56,6 +52,9 @@ public class AudioRecordManager implements RecordManager {
 
         public void run() {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+
+            audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
+            recordList = new ArrayList<byte[]>();
             int readSum = 0;
             audioRecord.startRecording();
             while (!cancel) {
@@ -74,6 +73,8 @@ public class AudioRecordManager implements RecordManager {
             }
 
             writeWaveFile(file, result);
+
+            if (endCallback != null) endCallback.run();
         }
 
         private void writeWaveFile(String outFilename, byte[] data) {
