@@ -1,15 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
+              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-    <Button android:layout_width="0dp" android:layout_height="200dp"
-            android:layout_weight="1"
-            android:id="@+id/rec"
-            android:text="Hold for record"/>
-    <Button android:layout_width="0dp" android:layout_height="200dp"
-            android:layout_weight="1"
-            android:id="@+id/play"
-            android:text="Tap for play"/>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button android:layout_width="0dp" android:layout_height="200dp"
+                android:layout_weight="1"
+                android:id="@+id/rec"
+                android:text="Hold for record"/>
+        <Button android:layout_width="0dp" android:layout_height="200dp"
+                android:layout_weight="1"
+                android:id="@+id/save"
+                android:text="Tap for play"/>
+
+        <Button android:layout_width="0dp" android:layout_height="200dp"
+                android:layout_weight="1"
+                android:id="@+id/play2"
+                android:visibility="gone"
+                android:text="Tap for play 2"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:visibility="gone"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button android:layout_width="200dp" android:layout_height="200dp"
+                android:layout_weight="1"
+                android:id="@+id/save2"
+                android:text="save"/>
+        <Button android:layout_width="200dp" android:layout_height="200dp"
+                android:layout_weight="1"
+                android:id="@+id/pool"
+                android:text="pool"/>
+    </LinearLayout>
+
+
 </LinearLayout>
