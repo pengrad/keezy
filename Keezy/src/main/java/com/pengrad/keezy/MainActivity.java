@@ -1,14 +1,9 @@
 package com.pengrad.keezy;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 import com.pengrad.keezy.sound.AudioRecordManager;
 import com.pengrad.keezy.sound.MediaPlayerManager;
 import com.pengrad.keezy.sound.PlayManager;
@@ -18,8 +13,6 @@ import org.androidannotations.annotations.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +29,7 @@ import static com.pengrad.keezy.Utils.log;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
-//    public static final String PREFS_ITEM_NAME = "recordsState";
+    //    public static final String PREFS_ITEM_NAME = "recordsState";
     public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
     public static final int SIZE = 8;
 
@@ -56,35 +49,8 @@ public class MainActivity extends ActionBarActivity {
 
     @AfterViews
     protected void initViews() {
-        try {
-//            recordManager = new MediaRecordManager();
-            recordManager = new AudioRecordManager();
-        } catch (Exception e) {
-            final StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            TextView text = new TextView(this);
-            text.setText(sw.toString());
-            new AlertDialog.Builder(this).setTitle("Problem with Hardware").setView(text)
-                    .setNeutralButton("Copy for send", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                                clipboard.setPrimaryClip(android.content.ClipData.newPlainText("exception", sw.toString()));
-                            } else {
-                                android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                clipboard.setText(sw.toString());
-                            }
-                            finish();
-                            Toast.makeText(getApplicationContext(), "Text copied, please paste it on Google Play", Toast.LENGTH_LONG).show();
-                        }
-                    })
-                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        public void onCancel(DialogInterface dialogInterface) {
-                            finish();
-                        }
-                    })
-                    .show();
-        }
+//        recordManager = new MediaRecordManager();
+        recordManager = new AudioRecordManager();
 //        playManager = new SoundPoolPlayManager(SIZE);
         playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
@@ -202,7 +168,7 @@ public class MainActivity extends ActionBarActivity {
         recordsState = recordsState ^ (int) Math.pow(2, index);
     }
 
-//    @Background
+    //    @Background
     protected void startRecord(int i) {
         try {
             recordManager.startRecord(files[i]);
@@ -213,7 +179,7 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-//    @Background
+    //    @Background
     protected void stopRecord(final int i) {
         recordManager.stopRecord(new Runnable() {
             public void run() {
@@ -222,7 +188,7 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-//    @Background
+    //    @Background
     protected void startPlay(int i) {
         playManager.startPlay(i);
     }
