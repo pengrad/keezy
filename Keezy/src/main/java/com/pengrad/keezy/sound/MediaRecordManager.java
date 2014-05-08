@@ -18,7 +18,7 @@ public class MediaRecordManager implements RecordManager {
         prepareRecord(recorder);
     }
 
-    public synchronized void startRecord(String path) throws IOException {
+    public synchronized void startRecord(String path) {
         try {
             recorder.setOutputFile(path);
             recorder.prepare();
@@ -26,8 +26,14 @@ public class MediaRecordManager implements RecordManager {
         } catch (IllegalStateException e) {
             prepareRecord(recorder);
             recorder.setOutputFile(path);
-            recorder.prepare();
+            try {
+                recorder.prepare();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             recorder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

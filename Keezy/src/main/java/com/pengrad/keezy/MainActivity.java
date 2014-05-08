@@ -12,7 +12,6 @@ import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -172,8 +171,6 @@ public class MainActivity extends ActionBarActivity {
     protected void startRecord(int i) {
         try {
             recordManager.startRecord(files[i]);
-        } catch (IOException e) {
-            log(e.toString());
         } catch (RuntimeException e) {
             log(e.toString());
         }

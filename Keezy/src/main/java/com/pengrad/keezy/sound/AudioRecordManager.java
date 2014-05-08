@@ -21,7 +21,7 @@ public class AudioRecordManager implements RecordManager {
 
     RecordAudio recordAudio = new RecordAudio();
 
-    public void startRecord(String path) throws IOException {
+    public void startRecord(String path) {
         recordAudio.file = path;
         new Thread(recordAudio).start();
     }
@@ -35,7 +35,7 @@ public class AudioRecordManager implements RecordManager {
     private static class RecordAudio implements Runnable {
         public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
         public static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
-        public static final int FREQUENCY = 44100;
+        public static final int FREQUENCY = 44100;   // 22050, 11025, 16000, 8000  44100
         public static final int RECORDER_BPP = 16;
         public static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT);
 
@@ -71,6 +71,8 @@ public class AudioRecordManager implements RecordManager {
             for (byte[] data : recordList) {
                 for (int i = 0; i < data.length; i++, j++) result[j] = data[i];
             }
+
+
 
             writeWaveFile(file, result);
 

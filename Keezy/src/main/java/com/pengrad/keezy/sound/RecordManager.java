@@ -8,7 +8,7 @@ import java.io.IOException;
  */
 public interface RecordManager {
 
-    void startRecord(String path) throws IOException;
+    void startRecord(String path);
 
     void stopRecord(Runnable endCallback);
 
