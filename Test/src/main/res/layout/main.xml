@@ -14,15 +14,18 @@
                 android:text="Hold for record"/>
         <Button android:layout_width="0dp" android:layout_height="200dp"
                 android:layout_weight="1"
-                android:id="@+id/save"
-                android:text="Tap for play"/>
-
+                android:id="@+id/play2"
+                android:text="Tap for play 2"/>
         <Button android:layout_width="0dp" android:layout_height="200dp"
                 android:layout_weight="1"
-                android:id="@+id/play2"
+                android:id="@+id/save"
                 android:visibility="gone"
-                android:text="Tap for play 2"/>
+                android:text="Tap for play"/>
+
     </LinearLayout>
+
+    <Spinner android:layout_width="wrap_content" android:layout_height="wrap_content"
+             android:id="@+id/spinner"/>
 
     <LinearLayout
             android:visibility="gone"
