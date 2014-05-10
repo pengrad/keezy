@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity {
     private AnimationManager animationManager;
 
     @AfterViews
-    protected void initViews() {
+    protected void init() {
 //        recordManager = new MediaRecordManager();
         recordManager = new AudioRecordManager();
 //        playManager = new SoundPoolPlayManager(SIZE);
@@ -87,9 +87,10 @@ public class MainActivity extends ActionBarActivity {
         buttons = new ArrayList<RecPlayButton>(SIZE);
         Collections.addAll(buttons, button1, button2, button3, button4, button5, button6, button7, button8);
 
-        recordsState = getPreferences(MODE_PRIVATE).getInt(PREFS_ITEM_NAME, 0);
-
         animationManager = new AnimationManager(this);
+
+        // save button state as bit[i] in int (10101011)
+        recordsState = getPreferences(MODE_PRIVATE).getInt(PREFS_ITEM_NAME, 0);
 
         for (int i = 0; i < buttons.size(); i++) {
             int buttonBit = (int) Math.pow(2, i);
