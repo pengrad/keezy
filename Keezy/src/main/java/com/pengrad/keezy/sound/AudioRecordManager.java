@@ -43,8 +43,6 @@ public class AudioRecordManager implements RecordManager {
         private volatile Runnable endCallback;
 
         private String file;
-        private AudioRecord audioRecord;
-        private List<byte[]> recordList;
 
         public void cancel() {
             cancel = true;
@@ -53,44 +51,44 @@ public class AudioRecordManager implements RecordManager {
         public void run() {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-            audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
-            recordList = new ArrayList<byte[]>();
+            AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
+            List<byte[]> recordList = new ArrayList<byte[]>();
             int readSum = 0;
+
             audioRecord.startRecording();
             while (!cancel) {
                 ByteBuffer bb = ByteBuffer.allocateDirect(BUFFER_SIZE);
                 int bufferReadResult = audioRecord.read(bb, BUFFER_SIZE);
-                recordList.add(bb.array());
+                if (bb.hasArray()) {
+                    recordList.add(bb.array());
+                } else {
+                    byte[] data = new byte[bufferReadResult];
+                    bb.get(data, 0, data.length);
+                    recordList.add(data);
+                }
                 readSum += bufferReadResult;
             }
             audioRecord.stop();
             audioRecord.release();
 
-            byte[] result = new byte[readSum];
-            int j = 0;
-            for (byte[] data : recordList) {
-                for (int i = 0; i < data.length; i++, j++) result[j] = data[i];
-            }
-
-
-
-            writeWaveFile(file, result);
+            writeWaveFile(file, recordList, readSum);
 
             if (endCallback != null) endCallback.run();
         }
 
-        private void writeWaveFile(String outFilename, byte[] data) {
+        private void writeWaveFile(String outFilename, List<byte[]> data, int size) {
             long longSampleRate = FREQUENCY;
             int channels = 1;
             long byteRate = RECORDER_BPP * FREQUENCY * channels / 8;
             try {
                 FileOutputStream out = new FileOutputStream(outFilename);
-                int totalAudioLen = data.length;
+                int totalAudioLen = size;
                 int totalDataLen = totalAudioLen + 36;
 
                 writeWaveFileHeader(out, totalAudioLen, totalDataLen, longSampleRate, channels, byteRate);
 
-                out.write(data);
+                for (byte[] bytes : data) out.write(bytes);
+
                 out.flush();
                 out.close();
             } catch (FileNotFoundException e) {
