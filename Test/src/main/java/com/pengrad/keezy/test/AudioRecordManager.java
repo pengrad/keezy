@@ -34,15 +34,21 @@ public class AudioRecordManager {
     }
 
     public void serFrequency(int frequency) {
-        recordAudio.FREQUENCY = frequency;
+        FREQUENCY = frequency;
     }
 
+    public void set8bit(boolean bit8) {
+        AUDIO_FORMAT = bit8 ? AudioFormat.ENCODING_PCM_8BIT : AudioFormat.ENCODING_PCM_16BIT;
+    }
+
+    private static int FREQUENCY = 44100;
+    private static int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
     private static class RecordAudio implements Runnable {
-        public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+        //        public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
         public static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
         //        public static final int FREQUENCY = 44100;   // 22050, 11025, 16000, 8000  44100
-        public static final int RECORDER_BPP = 16;
+//        public static final int RECORDER_BPP = 16;
 
 
         private volatile boolean cancel = false;
@@ -50,7 +56,9 @@ public class AudioRecordManager {
 
         private String file;
         private AudioRecord audioRecord;
-        private int FREQUENCY = 44100;
+
+
+        private byte RECORDER_BPP;
 
         public void cancel() {
             cancel = true;
@@ -58,6 +66,8 @@ public class AudioRecordManager {
 
         public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+
+            RECORDER_BPP = (byte) (AUDIO_FORMAT == AudioFormat.ENCODING_PCM_8BIT ? 8 : 16);
 
             int BUFFER_SIZE = AudioRecord.getMinBufferSize(FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT);
 

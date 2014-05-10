@@ -7,10 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.*;
 
 import java.io.File;
 
@@ -50,6 +47,13 @@ public class App extends Activity implements View.OnClickListener, AdapterView.O
         buttonPLay2.setOnClickListener(this);
 
         manager = new AudioRecordManager();
+
+        CheckBox checkBox = (CheckBox) findViewById(R.id.checkbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                manager.set8bit(b);
+            }
+        });
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, freq);
