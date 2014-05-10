@@ -12,4 +12,6 @@ public interface PlayManager {
 
     void startPlay(int index);
 
+    void release();
+
 }

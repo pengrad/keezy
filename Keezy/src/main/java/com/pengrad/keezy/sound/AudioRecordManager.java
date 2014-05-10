@@ -32,6 +32,10 @@ public class AudioRecordManager implements RecordManager {
         recordAudio = new RecordAudio();
     }
 
+    public void release() {
+        //nothing to do
+    }
+
     private static class RecordAudio implements Runnable {
         public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
         public static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;

@@ -98,7 +98,6 @@ public class MainActivity extends ActionBarActivity {
             if ((recordsState & buttonBit) == buttonBit) {
                 button.makePlay();
                 button.setOnTouchListener(playListener);
-                playManager.addSound(i, files[i]);
             } else {
                 button.setOnTouchListener(recordListener);
             }
@@ -106,9 +105,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        for (int i = 0; i < buttons.size(); i++) {
+            playManager.addSound(i, files[i]);
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         getPreferences(MODE_PRIVATE).edit().putInt(PREFS_ITEM_NAME, recordsState).commit();
+        playManager.release();
+        recordManager.release();
     }
 
     @OptionsItem(R.id.menu_edit)

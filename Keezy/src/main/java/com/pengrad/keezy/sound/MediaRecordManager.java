@@ -13,6 +13,7 @@ public class MediaRecordManager implements RecordManager {
 
     private MediaRecorder recorder;
 
+    //todo make init with creating new recorder, not working after release()
     public MediaRecordManager() {
         recorder = new MediaRecorder();
         prepareRecord(recorder);
@@ -48,6 +49,10 @@ public class MediaRecordManager implements RecordManager {
             prepareRecord(recorder);
             if (endCallback != null) endCallback.run();
         }
+    }
+
+    public void release() {
+        recorder.release();
     }
 
     private void prepareRecord(MediaRecorder recorder) {

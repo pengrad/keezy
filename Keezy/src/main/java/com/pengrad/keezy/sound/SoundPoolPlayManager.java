@@ -41,6 +41,12 @@ public class SoundPoolPlayManager implements PlayManager {
         }
     }
 
+    public void release() {
+        for (int i = 0; i < sounds.length; i++) {
+            removeSound(i);
+        }
+    }
+
     private static class Sound {
         int soundId, streamId;
 

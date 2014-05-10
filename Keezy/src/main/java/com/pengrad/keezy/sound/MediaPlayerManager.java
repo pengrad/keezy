@@ -41,4 +41,10 @@ public class MediaPlayerManager implements PlayManager {
         }
         mediaPlayer.start();
     }
+
+    public void release() {
+        for (int i = 0; i < mediaPlayers.length; i++) {
+            removeSound(i);
+        }
+    }
 }
