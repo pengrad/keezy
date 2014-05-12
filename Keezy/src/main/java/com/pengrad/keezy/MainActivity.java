@@ -4,6 +4,9 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
+import com.espian.showcaseview.ShowcaseView;
+import com.espian.showcaseview.targets.ActionItemTarget;
+import com.espian.showcaseview.targets.ViewTarget;
 import com.pengrad.keezy.sound.AudioRecordManager;
 import com.pengrad.keezy.sound.MediaPlayerManager;
 import com.pengrad.keezy.sound.PlayManager;
@@ -26,7 +29,7 @@ import static com.pengrad.keezy.Utils.log;
 
 @EActivity(R.layout.activity_main)
 @OptionsMenu(R.menu.main)
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
     //    public static final String PREFS_ITEM_NAME = "recordsState";
     public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
@@ -103,7 +106,30 @@ public class MainActivity extends ActionBarActivity {
                 button.setOnTouchListener(recordListener);
             }
         }
+
+
+
+//        getSupportActionBar().hide();
+        disableOtherButtons(button7, false);
+        ViewTarget target = new ViewTarget(R.id.button7, this);
+
+        ShowcaseView.ConfigOptions configOptions = new ShowcaseView.ConfigOptions();
+        configOptions.block = true;
+
+        showcaseView = ShowcaseView.insertShowcaseView(target, this, "Get started", "Touch button to begin set-up", configOptions);
+        showcaseView.overrideButtonClick(this);
+
+//        showcaseView = new ShowcaseView.Builder(this)
+//                .setTarget(target)
+//                .setContentTitle("ShowcaseView")
+//                .setContentText("This is highlighting the Home button")
+//                .setStyle(R.style.CustomShowcaseTheme)
+//                .hideOnTouchOutside()
+//                .setOnClickListener(this)
+//                .build();
     }
+
+    ShowcaseView showcaseView;
 
     @Override
     protected void onStart() {
@@ -198,5 +224,31 @@ public class MainActivity extends ActionBarActivity {
     //    @Background
     protected void startPlay(int i) {
         playManager.startPlay(i);
+    }
+
+    int counter = 0;
+
+    public void onClick(View view) {
+        switch (counter) {
+            case 0:
+                showcaseView.setShowcase(new ActionItemTarget(this, R.id.menu_edit), true);
+                break;
+
+            case 1:
+                showcaseView.setShowcase(new ViewTarget(button4), true);
+                break;
+
+            case 2:
+                showcaseView.setShowcase(ShowcaseView.NONE);
+                showcaseView.setText("Check it out", "You don't always need a target to showcase");
+//                showcaseView.setContentTitle("Check it out");
+//                showcaseView.setContentText("You don't always need a target to showcase");
+                showcaseView.setButtonText("Close");
+                break;
+            case 3:
+                showcaseView.hide();
+                break;
+        }
+        counter++;
     }
 }
