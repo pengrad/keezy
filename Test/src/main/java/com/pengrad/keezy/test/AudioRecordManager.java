@@ -9,7 +9,10 @@ import android.util.Log;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,11 +92,23 @@ public class AudioRecordManager {
             audioRecord.stop();
             audioRecord.release();
 
-//            byte[] result = new byte[readSum];
-//            int j = 0;
-//            for (byte[] data : recordList) {
-//                for (int i = 0; i < data.length; i++, j++) result[j] = data[i];
-//            }
+            byte[] data = new byte[readSum];
+            int j = 0;
+            for (byte[] d : recordList) {
+                for (int i = 0; i < d.length; i++, j++) {
+                    data[j] = d[i];
+                }
+            }
+
+
+//            byte[] res = new EndPointDetection(data, FREQUENCY).doEndPointDetection();
+            byte[] res = new byte[data.length];
+            new Gate().process(data, res);
+
+
+            List<byte[]> resList = new ArrayList<byte[]>();
+            resList.add(res);
+//            writeWaveFile(file, resList, res.length);
 
             writeWaveFile(file, recordList, readSum);
 
@@ -174,4 +189,406 @@ public class AudioRecordManager {
             out.write(header, 0, 44);
         }
     }
+
+
+    public static class EndPointDetection {
+        private byte[] originalSignal; //input
+        private byte[] silenceRemovedSignal;//output
+        private int samplingRate;
+        private int firstSamples;
+        private int samplePerFrame;
+
+        public EndPointDetection(byte[] originalSignal, int samplingRate) {
+            this.originalSignal = originalSignal;
+            this.samplingRate = samplingRate;
+            samplePerFrame = this.samplingRate / 1000;
+            firstSamples = samplePerFrame * 200;// according to formula
+        }
+
+        public byte[] doEndPointDetection() {
+            // for identifying each sample whether it is voiced or unvoiced
+            float[] voiced = new float[originalSignal.length];
+            float sum = 0;
+            double sd = 0.0;
+            double m = 0.0;
+            // 1. calculation of mean
+            for (int i = 0; i < firstSamples; i++) {
+                sum += originalSignal[i];
+            }
+            m = sum / firstSamples;// mean
+            sum = 0;// reuse var for S.D.
+
+            // 2. calculation of Standard Deviation
+            for (int i = 0; i < firstSamples; i++) {
+                sum += Math.pow((originalSignal[i] - m), 2);
+            }
+            sd = Math.sqrt(sum / firstSamples);
+            // 3. identifying one-dimensional Mahalanobis distance function
+            // i.e. |x-u|/s greater than ####3 or not,
+            for (int i = 0; i < originalSignal.length; i++) {
+                if ((Math.abs(originalSignal[i] - m) / sd) > 0.3) { //0.3 =THRESHOLD.. adjust value yourself
+                    voiced[i] = 1;
+                } else {
+                    voiced[i] = 0;
+                }
+            }
+            // 4. calculation of voiced and unvoiced signals
+            // mark each frame to be voiced or unvoiced frame
+            int frameCount = 0;
+            int usefulFramesCount = 1;
+            int count_voiced = 0;
+            int count_unvoiced = 0;
+            int voicedFrame[] = new int[originalSignal.length / samplePerFrame];
+            // the following calculation truncates the remainder
+            int loopCount = originalSignal.length - (originalSignal.length % samplePerFrame);
+            for (int i = 0; i < loopCount; i += samplePerFrame) {
+                count_voiced = 0;
+                count_unvoiced = 0;
+                for (int j = i; j < i + samplePerFrame; j++) {
+                    if (voiced[j] == 1) {
+                        count_voiced++;
+                    } else {
+                        count_unvoiced++;
+                    }
+                }
+                if (count_voiced > count_unvoiced) {
+                    usefulFramesCount++;
+                    voicedFrame[frameCount++] = 1;
+                } else {
+                    voicedFrame[frameCount++] = 0;
+                }
+            }
+            // 5. silence removal
+            silenceRemovedSignal = new byte[usefulFramesCount * samplePerFrame];
+            int k = 0;
+            for (int i = 0; i < frameCount; i++) {
+                if (voicedFrame[i] == 1) {
+                    for (int j = i * samplePerFrame; j < i * samplePerFrame + samplePerFrame; j++) {
+                        silenceRemovedSignal[k++] = originalSignal[j];
+                    }
+                }
+            }
+            // end
+            return silenceRemovedSignal;
+        }
+    }
+
+    public static class Gate {
+        protected boolean open = false;
+        protected int attack = 20;
+        protected double treshold = 5.0;
+        protected transient RingFloat ring = new RingFloat();
+        protected transient float peak = 0.0f;
+        protected transient int peakPos = 0;
+
+        public int calculateSampleCount(int milliseconds) {
+            int sr = 44100;
+            int count = (sr * milliseconds) / 1000;
+            return count;
+        }
+
+        public void process(byte[] data, byte[] out) {
+            int attack = getAttack();
+            int bufSize = calculateSampleCount(attack);
+            float triggerValue = (float) (0.01 * getTreshold());
+            ring.ensureCapacity(bufSize);
+            boolean open = isOpen();
+
+
+            for (int i = 0; i < data.length; i++) {
+                byte a = data[i];
+                float abs = (a < 0) ? -a : a;
+                float old = ring.get(bufSize);
+                ring.put(a);
+                if (a > peak) {
+                    peak = a;
+                    peakPos = 0;
+                } else if (peakPos >= bufSize) { // old peak has 'timed out'
+                    peak = 0.0f;
+                    for (int j = 0; j < bufSize; j++) { // find peak in buffered data
+                        float b = ring.get(j);
+                        if (b < 0) {
+                            b = -b;
+                        }
+                        if (b > peak) {
+                            peak = b;
+                            peakPos = j - 1; // ('++' below, so -1 here)
+                        }
+                    }
+                }
+                open = (peak >= triggerValue);
+                out[i] = open ? a : 0;
+                peakPos++;
+            }
+            setOpen(open); // propagate last status of local variable open to property and ui
+        }
+
+        /**
+         */
+        public int getAttack() {
+            return attack;
+        }
+
+        /**
+         */
+        public double getTreshold() {
+            return treshold;
+        }
+
+        /**
+         */
+        public void setAttack(int i) {
+            if (attack != i) {
+                attack = i;
+            }
+        }
+
+        /**
+         */
+        public void setTreshold(double s) {
+            if (treshold != s) {
+                treshold = s;
+            }
+        }
+
+        /**
+         */
+        public boolean isOpen() {
+            return open;
+        }
+
+        /**
+         */
+        public void setOpen(boolean b) {
+            if (open != b) {
+                open = b;
+            }
+        }
+
+    } // end Gate
+
+    public static class RingFloat extends FifoFloat {
+
+        // ------------------------------------------------------------------------
+        // --- fields                                                           ---
+        // ------------------------------------------------------------------------
+
+        protected float[] buffer;
+
+        protected int pos;
+
+
+        // ------------------------------------------------------------------------
+        // --- constructors                                                     ---
+        // ------------------------------------------------------------------------
+
+        public RingFloat() {
+            super(); // (many of the superclass's features are replaced with a different implementation here)
+            buffer = new float[DEFAULT_ALLOCATION_SIZE];
+            pos = 0;
+        }
+
+        public RingFloat(int initialCapacity) {
+            this();
+            ensureCapacity(initialCapacity);
+        }
+
+
+        // ------------------------------------------------------------------------
+        // --- methods                                                          ---
+        // ------------------------------------------------------------------------
+
+        public void ensureCapacity(int size) {
+            if (buffer.length < size) {
+                float[] newbuffer = new float[size];
+                System.arraycopy(buffer, 0, newbuffer, size - buffer.length, buffer.length);
+                buffer = newbuffer;
+            }
+        }
+
+        /**
+         * Only the remaining buffer content will be used by the fifo-queue.
+         */
+        public void put(FloatBuffer buf) {
+            // untested
+            int length = buf.capacity();
+            if (length > buffer.length) {
+                throw new BufferOverflowException();
+            }
+            int l = buffer.length - pos;
+            if (length > l) {
+                // copy and wrap around at end
+                buf.get(buffer, pos, l);
+                this.pos = length - l;
+                buf.get(buffer, 0, this.pos);
+            } else {
+                // simple copy
+                buf.get(buffer, pos, length);
+                pos += length;
+            }
+        }
+
+        public void put(float[] f) {
+            put(f, 0, f.length);
+        }
+
+        public void put(float[] f, int offset, int length) {
+            if (length > buffer.length) {
+                throw new BufferOverflowException();
+            }
+            int l = buffer.length - pos;
+            if (length > l) {
+                // copy and wrap around at end
+                System.arraycopy(f, offset, buffer, pos, l);
+                this.pos = length - l;
+                System.arraycopy(f, offset + l, buffer, 0, this.pos);
+            } else {
+                // simple copy
+                System.arraycopy(f, offset, buffer, pos, length);
+                pos += length;
+            }
+        }
+
+        public void put(float f) {
+            buffer[pos++] = f;
+            if (pos >= buffer.length) {
+                pos = 0;
+            }
+        }
+
+        public float get(int diff) {
+            int i = ((pos - diff) + buffer.length) % buffer.length;
+            return buffer[i];
+        }
+
+    } // end RingFloat
+
+    public static class FifoFloat {
+
+        // ------------------------------------------------------------------------
+        // --- static field                                                     ---
+        // ------------------------------------------------------------------------
+
+        public static int DEFAULT_ALLOCATION_SIZE = 2048;
+
+
+        // ------------------------------------------------------------------------
+        // --- fields                                                           ---
+        // ------------------------------------------------------------------------
+
+        protected ArrayList fifo;
+
+        protected int avail;
+
+        protected FloatBuffer appendable;
+
+        protected int allocationSize;
+
+
+        // ------------------------------------------------------------------------
+        // --- constructor                                                      ---
+        // ------------------------------------------------------------------------
+
+        public FifoFloat() {
+            this.fifo = new ArrayList();
+            this.appendable = null;
+            this.allocationSize = DEFAULT_ALLOCATION_SIZE;
+        }
+
+
+        // ------------------------------------------------------------------------
+        // --- methods                                                          ---
+        // ------------------------------------------------------------------------
+
+        /**
+         * Only the remaining buffer content will be used by the fifo-queue.
+         */
+        public void put(FloatBuffer buf) {
+            synchronized (fifo) {
+                this.fifo.add(buf);
+                this.avail += buf.remaining();
+                this.appendable = null;
+            }
+        }
+
+        public void put(float[] f) {
+            getAppendable().put(f);
+            this.avail += f.length;
+        }
+
+        public void put(float[] f, int offset, int length) {
+            getAppendable().put(f, offset, length);
+            this.avail += length;
+        }
+
+        public void put(float f) {
+            getAppendable().put(f);
+        }
+
+        public void get(float[] arr, int n) {
+            if (n <= this.avail) {
+                synchronized (fifo) {
+                    this.avail -= n;
+                    int pos = 0;
+                    while (n > 0) {
+                        FloatBuffer b = (FloatBuffer) fifo.get(0);
+                        int c = b.remaining();
+                        if (c > n) {
+                            b.get(arr, pos, n);
+                            n = 0;
+                        } else {
+                            b.get(arr, pos, c); // whole rest of buffer
+                            n -= c;
+                            pos += c;
+                            fifo.remove(0);
+                        }
+                    }
+                }
+            } else {
+                throw new BufferUnderflowException();
+            }
+        }
+
+        public void get(float[] arr) {
+            this.get(arr, arr.length);
+        }
+
+        public float get() {
+            float[] arr = new float[1];
+            get(arr, 1);
+            return arr[0];
+        }
+
+        public int available() {
+            return this.avail;
+        }
+
+        public boolean isEmpty() {
+            return (this.avail == 0);
+        }
+
+        public void ensureCapacity(int size) {
+            // ??
+            if ((this.appendable == null) || (this.appendable.capacity() < size)) {
+                synchronized (fifo) {
+                    this.appendable = null; // force new allocation with next put()
+                    if (size > this.allocationSize) {
+                        this.allocationSize = size; // next call to getAppendable will allocate appropriate amount
+                    }
+                }
+
+            }
+        }
+
+        protected FloatBuffer getAppendable() {
+            if (this.appendable == null) {
+                synchronized (fifo) {
+                    this.appendable = FloatBuffer.allocate(DEFAULT_ALLOCATION_SIZE);
+                    this.fifo.add(this.appendable);
+                }
+            }
+            return this.appendable;
+        }
+
+    } // end FifoFloat
 }
