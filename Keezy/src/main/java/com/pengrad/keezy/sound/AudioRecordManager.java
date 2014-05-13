@@ -39,9 +39,9 @@ public class AudioRecordManager implements RecordManager {
     private static class RecordAudio implements Runnable {
         public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
         public static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
-        public static final int FREQUENCY = 44100;   // 22050, 11025, 16000, 8000  44100
-        public static final int RECORDER_BPP = 16;
-        public static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT);
+        public static final int SAMPLE_RATE = 44100;   // 22050, 11025, 16000, 8000  44100
+        public static final int BITS_PER_SAMPLE = 16;
+        public static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
 
         private volatile boolean cancel = false;
         private volatile Runnable endCallback;
@@ -55,7 +55,7 @@ public class AudioRecordManager implements RecordManager {
         public void run() {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-            AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, FREQUENCY, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
+            AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
             List<byte[]> recordList = new ArrayList<byte[]>();
             int readSum = 0;
 
@@ -81,9 +81,9 @@ public class AudioRecordManager implements RecordManager {
         }
 
         private void writeWaveFile(String outFilename, List<byte[]> data, int size) {
-            long longSampleRate = FREQUENCY;
+            long longSampleRate = SAMPLE_RATE;
             int channels = 1;
-            long byteRate = RECORDER_BPP * FREQUENCY * channels / 8;
+            long byteRate = BITS_PER_SAMPLE * SAMPLE_RATE * channels / 8;
             try {
                 FileOutputStream out = new FileOutputStream(outFilename);
                 int totalAudioLen = size;
@@ -139,7 +139,7 @@ public class AudioRecordManager implements RecordManager {
             header[31] = (byte) ((byteRate >> 24) & 0xff);
             header[32] = (byte) (2 * 16 / 8);  // block align
             header[33] = 0;
-            header[34] = RECORDER_BPP;  // bits per sample
+            header[34] = BITS_PER_SAMPLE;  // bits per sample
             header[35] = 0;
             header[36] = 'd';
             header[37] = 'a';
