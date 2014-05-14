@@ -4,10 +4,7 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
-import com.pengrad.keezy.sound.AudioRecordManager;
-import com.pengrad.keezy.sound.MediaPlayerManager;
-import com.pengrad.keezy.sound.PlayManager;
-import com.pengrad.keezy.sound.RecordManager;
+import com.pengrad.keezy.sound.*;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
@@ -28,8 +25,11 @@ import static com.pengrad.keezy.Utils.log;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
-    //    public static final String PREFS_ITEM_NAME = "recordsState";
-    public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
+//    public static final String FILE_EXT = ".3gp";
+    public static final String FILE_EXT = ".wav";
+
+//    public static final String PREFS_ITEM_NAME = "recordsState";
+        public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
     public static final int SIZE = 8;
 
     @ViewById
@@ -50,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
     protected void init() {
 //        recordManager = new MediaRecordManager();
         recordManager = new AudioRecordManager();
+
 //        playManager = new SoundPoolPlayManager(SIZE);
         playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
@@ -58,7 +59,7 @@ public class MainActivity extends ActionBarActivity {
             //todo Dialog and exit
         }
         files = new String[SIZE];
-        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + ".wav";
+        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + FILE_EXT;
 
         Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
@@ -103,6 +104,8 @@ public class MainActivity extends ActionBarActivity {
                 button.setOnTouchListener(recordListener);
             }
         }
+
+        log(AudioRecordManager.getBufSize() + "");
     }
 
     @Override
@@ -178,21 +181,25 @@ public class MainActivity extends ActionBarActivity {
     }
 
     //    @Background
-    protected void startRecord(int i) {
-        try {
-            recordManager.startRecord(files[i]);
-        } catch (RuntimeException e) {
-            log(e.toString());
-        }
+    protected void startRecord(final int i) {
+        new Thread() {
+            public void run() {
+                recordManager.startRecord(files[i]);
+            }
+        }.start();
     }
 
     //    @Background
     protected void stopRecord(final int i) {
-        recordManager.stopRecord(new Runnable() {
+        new Thread() {
             public void run() {
-                playManager.addSound(i, files[i]);
+                recordManager.stopRecord(new Runnable() {
+                    public void run() {
+                        playManager.addSound(i, files[i]);
+                    }
+                });
             }
-        });
+        }.start();
     }
 
     //    @Background

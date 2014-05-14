@@ -58,11 +58,13 @@ public class MediaRecordManager implements RecordManager {
     private void prepareRecord(MediaRecorder recorder) {
         recorder.reset();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        recorder.setAudioChannels(2);
-        recorder.setAudioEncodingBitRate(320000);
-        recorder.setAudioSamplingRate(96000);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
+//        recorder.setAudioChannels(2);
+//        recorder.setAudioEncodingBitRate(320000);
+//        recorder.setAudioSamplingRate(96000);
+//        recorder.setAudioEncodingBitRate(320000);
+//        recorder.setAudioSamplingRate(16000);
     }
 
 }

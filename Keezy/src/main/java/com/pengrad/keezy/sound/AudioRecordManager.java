@@ -33,6 +33,10 @@ public class AudioRecordManager implements RecordManager {
         //nothing to do
     }
 
+    public static int getBufSize() {
+        return AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    }
+
     private static class RecordAudio implements Runnable {
         public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
         public static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
