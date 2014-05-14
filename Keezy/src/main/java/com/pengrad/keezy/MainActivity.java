@@ -4,7 +4,10 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
-import com.pengrad.keezy.sound.*;
+import com.pengrad.keezy.sound.AudioRecordManager;
+import com.pengrad.keezy.sound.PlayManager;
+import com.pengrad.keezy.sound.RecordManager;
+import com.pengrad.keezy.sound.RingtonePlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
@@ -25,11 +28,11 @@ import static com.pengrad.keezy.Utils.log;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
-//    public static final String FILE_EXT = ".3gp";
+    //    public static final String FILE_EXT = ".3gp";
     public static final String FILE_EXT = ".wav";
 
-//    public static final String PREFS_ITEM_NAME = "recordsState";
-        public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
+    //    public static final String PREFS_ITEM_NAME = "recordsState";
+    public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
     public static final int SIZE = 8;
 
     @ViewById
@@ -52,7 +55,8 @@ public class MainActivity extends ActionBarActivity {
         recordManager = new AudioRecordManager();
 
 //        playManager = new SoundPoolPlayManager(SIZE);
-        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
+//        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
+        playManager = new RingtonePlayManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
         if (!folder.exists() && !folder.mkdir()) {
             log("Can't create folder");
