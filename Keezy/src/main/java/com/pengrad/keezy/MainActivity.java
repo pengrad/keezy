@@ -5,9 +5,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import com.pengrad.keezy.sound.AudioRecordManager;
-import com.pengrad.keezy.sound.MediaPlayerManager;
 import com.pengrad.keezy.sound.PlayManager;
 import com.pengrad.keezy.sound.RecordManager;
+import com.pengrad.keezy.sound.RingtonePlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
@@ -51,7 +51,8 @@ public class MainActivity extends ActionBarActivity {
 //        recordManager = new MediaRecordManager();
         recordManager = new AudioRecordManager();
 //        playManager = new SoundPoolPlayManager(SIZE);
-        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
+//        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
+        playManager = new RingtonePlayManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
         if (!folder.exists() && !folder.mkdir()) {
             log("Can't create folder");
