@@ -194,13 +194,15 @@ public class MainActivity extends ActionBarActivity {
     }
 
     protected void stopRecord(final int i) {
+        final Runnable endCallback = new Runnable() {
+            public void run() {
+                playManager.addSound(i, files[i]);
+            }
+        };
+
         new Thread() {
             public void run() {
-                recordManager.stopRecord(new Runnable() {
-                    public void run() {
-                        playManager.addSound(i, files[i]);
-                    }
-                });
+                recordManager.stopRecord(endCallback);
             }
         }.start();
     }
