@@ -4,10 +4,7 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
-import com.pengrad.keezy.sound.AudioRecordManager;
-import com.pengrad.keezy.sound.PlayManager;
-import com.pengrad.keezy.sound.RecordManager;
-import com.pengrad.keezy.sound.RingtonePlayManager;
+import com.pengrad.keezy.sound.*;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
@@ -28,11 +25,6 @@ import static com.pengrad.keezy.Utils.log;
 @OptionsMenu(R.menu.main)
 public class MainActivity extends ActionBarActivity {
 
-    //    public static final String FILE_EXT = ".3gp";
-    public static final String FILE_EXT = ".wav";
-
-    //    public static final String PREFS_ITEM_NAME = "recordsState";
-    public static final String PREFS_ITEM_NAME = "recordsState_v1.1 ";
     public static final int SIZE = 8;
 
     @ViewById
@@ -49,11 +41,20 @@ public class MainActivity extends ActionBarActivity {
     private int recordsState;
     private AnimationManager animationManager;
 
+    private String fileExt;
+    private String prefName;
+
     @AfterViews
     protected void init() {
-//        recordManager = new MediaRecordManager();
-        recordManager = new AudioRecordManager();
-
+        if (AudioRecordManager.isOK()) {
+            recordManager = new AudioRecordManager();
+            fileExt = ".wav";
+            prefName = "recordsState_v1.1";
+        } else {
+            recordManager = new MediaRecordManager();
+            fileExt = ".3gp";
+            prefName = "recordsState_mediarecorder";
+        }
 //        playManager = new SoundPoolPlayManager(SIZE);
 //        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
         playManager = new RingtonePlayManager(getApplicationContext(), SIZE);
@@ -63,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
             //todo Dialog and exit
         }
         files = new String[SIZE];
-        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + FILE_EXT;
+        for (int i = 0; i < SIZE; i++) files[i] = folder + "/record_" + i + fileExt;
 
         Callback<RecPlayButton> recordCallback = new Callback<RecPlayButton>() {
             public void onTouchDown(RecPlayButton view) {
@@ -95,7 +96,7 @@ public class MainActivity extends ActionBarActivity {
         animationManager = new AnimationManager(this);
 
         // save button state as bit[i] in int (10101011)
-        recordsState = getPreferences(MODE_PRIVATE).getInt(PREFS_ITEM_NAME, 0);
+        recordsState = getPreferences(MODE_PRIVATE).getInt(prefName, 0);
 
         for (int i = 0; i < buttons.size(); i++) {
             int buttonBit = (int) Math.pow(2, i);
@@ -108,8 +109,6 @@ public class MainActivity extends ActionBarActivity {
                 button.setOnTouchListener(recordListener);
             }
         }
-
-        log(AudioRecordManager.getBufSize() + "");
     }
 
     @Override
@@ -123,7 +122,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        getPreferences(MODE_PRIVATE).edit().putInt(PREFS_ITEM_NAME, recordsState).commit();
+        getPreferences(MODE_PRIVATE).edit().putInt(prefName, recordsState).commit();
         playManager.release();
         recordManager.release();
     }

@@ -33,8 +33,10 @@ public class AudioRecordManager implements RecordManager {
         //nothing to do
     }
 
-    public static int getBufSize() {
-        return AudioRecord.getMinBufferSize(8000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+    public static boolean isOK() {
+        if (RecordAudio.BUFFER_SIZE <= 0) return false;
+        AudioRecord audioRecord = RecordAudio.makeAudioRecord();
+        return audioRecord.getState() != AudioRecord.STATE_UNINITIALIZED;
     }
 
     private static class RecordAudio implements Runnable {
@@ -44,6 +46,10 @@ public class AudioRecordManager implements RecordManager {
         public static final byte BITS_PER_SAMPLE = 16;
         public static final int SAMPLE_RATE = 44100;   // 22050, 11025, 16000, 8000  44100
         public static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
+
+        public static AudioRecord makeAudioRecord() {
+            return new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
+        }
 
         private volatile boolean cancel = false;
         private volatile Runnable endCallback;
@@ -57,7 +63,7 @@ public class AudioRecordManager implements RecordManager {
         public void run() {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-            AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, BUFFER_SIZE);
+            AudioRecord audioRecord = makeAudioRecord();
             List<byte[]> recordList = new ArrayList<byte[]>();
 //            int readSum = 0;
 

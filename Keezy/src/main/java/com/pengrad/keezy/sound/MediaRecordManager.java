@@ -63,8 +63,6 @@ public class MediaRecordManager implements RecordManager {
 //        recorder.setAudioChannels(2);
 //        recorder.setAudioEncodingBitRate(320000);
 //        recorder.setAudioSamplingRate(96000);
-//        recorder.setAudioEncodingBitRate(320000);
-//        recorder.setAudioSamplingRate(16000);
     }
 
 }
