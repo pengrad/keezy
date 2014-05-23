@@ -49,7 +49,7 @@ public class MainActivity extends ActionBarActivity {
         if (AudioRecordManager.isOK()) {
             recordManager = new AudioRecordManager();
             fileExt = ".wav";
-            prefName = "recordsState_v1.1";
+            prefName = "recordsState_v1.1 ";
         } else {
             recordManager = new MediaRecordManager();
             fileExt = ".3gp";
