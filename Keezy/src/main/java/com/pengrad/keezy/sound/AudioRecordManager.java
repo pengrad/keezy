@@ -3,7 +3,6 @@ package com.pengrad.keezy.sound;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Process;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class AudioRecordManager implements RecordManager {
 
     public void stopRecord(Runnable endCallback) {
         recordAudio.endCallback = endCallback;
-        recordAudio.cancel();
+        recordAudio.cancel = true;
         recordAudio = new RecordAudio();
     }
 
@@ -60,10 +59,6 @@ public class AudioRecordManager implements RecordManager {
         private volatile Runnable endCallback;
 
         private String file;
-
-        public void cancel() {
-            cancel = true;
-        }
 
         public void run() {
             AudioRecord audioRecord = makeAudioRecord();
