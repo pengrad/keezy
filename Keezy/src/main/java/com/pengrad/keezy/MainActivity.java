@@ -187,6 +187,7 @@ public class MainActivity extends ActionBarActivity {
     protected void startRecord(final int i) {
         new Thread() {
             public void run() {
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
                 recordManager.startRecord(files[i]);
             }
         }.start();

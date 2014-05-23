@@ -13,7 +13,7 @@ public class MediaRecordManager implements RecordManager {
 
     private MediaRecorder recorder;
 
-    public synchronized void startRecord(String path) {
+    public void startRecord(String path) {
         try {
             recorder.setOutputFile(path);
             recorder.prepare();
@@ -32,7 +32,7 @@ public class MediaRecordManager implements RecordManager {
         }
     }
 
-    public synchronized void stopRecord(Runnable endCallback) {
+    public void stopRecord(Runnable endCallback) {
         try {
             recorder.stop();
         } catch (IllegalStateException e) {
