@@ -38,7 +38,7 @@ public class AudioRecordManager implements RecordManager {
     }
 
     public static boolean isOK() {
-        if(1==1) return false;
+//        if(1==1) return false;
         if (RecordAudio.BUFFER_SIZE <= 0) return false;
         AudioRecord audioRecord = RecordAudio.makeAudioRecord();
         return audioRecord.getState() != AudioRecord.STATE_UNINITIALIZED;
