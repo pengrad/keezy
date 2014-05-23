@@ -55,8 +55,6 @@ public class MainActivity extends ActionBarActivity {
             fileExt = ".3gp";
             prefName = "recordsState_mediarecorder";
         }
-//        playManager = new SoundPoolPlayManager(SIZE);
-//        playManager = new MediaPlayerManager(getApplicationContext(), SIZE);
         playManager = new RingtonePlayManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
         if (!folder.exists() && !folder.mkdir()) {
@@ -183,7 +181,6 @@ public class MainActivity extends ActionBarActivity {
         recordsState = recordsState ^ (int) Math.pow(2, index);
     }
 
-    //    @Background
     protected void startRecord(final int i) {
         new Thread() {
             public void run() {
@@ -192,7 +189,6 @@ public class MainActivity extends ActionBarActivity {
         }.start();
     }
 
-    //    @Background
     protected void stopRecord(final int i) {
         new Thread() {
             public void run() {
@@ -205,7 +201,6 @@ public class MainActivity extends ActionBarActivity {
         }.start();
     }
 
-    //    @Background
     protected void startPlay(int i) {
         playManager.startPlay(i);
     }

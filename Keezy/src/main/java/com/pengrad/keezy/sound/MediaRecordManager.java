@@ -60,9 +60,6 @@ public class MediaRecordManager implements RecordManager {
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_WB);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_WB);
-//        recorder.setAudioChannels(2);
-//        recorder.setAudioEncodingBitRate(320000);
-//        recorder.setAudioSamplingRate(96000);
     }
 
 }

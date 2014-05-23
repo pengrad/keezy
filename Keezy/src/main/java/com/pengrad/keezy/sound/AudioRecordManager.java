@@ -65,7 +65,6 @@ public class AudioRecordManager implements RecordManager {
 
             AudioRecord audioRecord = makeAudioRecord();
             List<byte[]> recordList = new ArrayList<byte[]>();
-//            int readSum = 0;
 
             audioRecord.startRecording();
             while (!cancel) {
@@ -78,7 +77,6 @@ public class AudioRecordManager implements RecordManager {
                     bb.get(data, 0, data.length);
                     recordList.add(data);
                 }
-//                readSum += bufferReadResult;
             }
             audioRecord.stop();
             audioRecord.release();
