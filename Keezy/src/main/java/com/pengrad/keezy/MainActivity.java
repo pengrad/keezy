@@ -113,8 +113,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         for (int i = 0; i < buttons.size(); i++) {
-            playManager.addSound(i, files[i]);
+            if (!buttons.get(i).isRec()) {
+                playManager.addSound(i, files[i]);
+            }
         }
+        recordManager.init();
     }
 
     @Override

@@ -10,6 +10,8 @@ public interface RecordManager {
 
     void stopRecord(Runnable endCallback);
 
+    void init();
+
     void release();
 
 }
