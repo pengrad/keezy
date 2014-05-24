@@ -19,7 +19,7 @@ public class AudioRecordManager implements RecordManager {
 
     public void startRecord(String path) {
         recordAudio.file = path;
-        recordAudio.run();
+        new Thread(recordAudio).start();
     }
 
     public void stopRecord(Runnable endCallback) {
@@ -61,6 +61,8 @@ public class AudioRecordManager implements RecordManager {
         private String file;
 
         public void run() {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+
             AudioRecord audioRecord = makeAudioRecord();
             List<byte[]> recordList = new ArrayList<byte[]>();
 

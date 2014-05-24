@@ -4,7 +4,10 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
-import com.pengrad.keezy.sound.*;
+import com.pengrad.keezy.sound.AudioRecordManager;
+import com.pengrad.keezy.sound.PlayManager;
+import com.pengrad.keezy.sound.RecordManager;
+import com.pengrad.keezy.sound.RingtonePlayManager;
 import com.pengrad.keezy.ui.RecPlayButton;
 import org.androidannotations.annotations.*;
 
@@ -46,15 +49,12 @@ public class MainActivity extends ActionBarActivity {
 
     @AfterViews
     protected void init() {
-        if (AudioRecordManager.isOK()) {
-            recordManager = new AudioRecordManager();
-            fileExt = ".wav";
-            prefName = "recordsState_v1.1 ";
-        } else {
-            recordManager = new MediaRecordManager();
-            fileExt = ".3gp";
-            prefName = "recordsState_mediarecorder";
+        if (!AudioRecordManager.isOK()) {
+            finish();
         }
+        fileExt = ".wav";
+        prefName = "recordsState_v1.1 ";
+        recordManager = new AudioRecordManager();
         playManager = new RingtonePlayManager(getApplicationContext(), SIZE);
         File folder = new File(Environment.getExternalStorageDirectory() + "/keezy_records");
         if (!folder.exists() && !folder.mkdir()) {
@@ -185,12 +185,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     protected void startRecord(final int i) {
-        new Thread() {
-            public void run() {
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-                recordManager.startRecord(files[i]);
-            }
-        }.start();
+        recordManager.startRecord(files[i]);
     }
 
     protected void stopRecord(final int i) {
@@ -199,12 +194,7 @@ public class MainActivity extends ActionBarActivity {
                 playManager.addSound(i, files[i]);
             }
         };
-
-        new Thread() {
-            public void run() {
-                recordManager.stopRecord(endCallback);
-            }
-        }.start();
+        recordManager.stopRecord(endCallback);
     }
 
     protected void startPlay(int i) {
