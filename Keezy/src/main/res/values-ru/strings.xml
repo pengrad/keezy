@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Keezy</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_done">Done</string>
+    <string name="error_dialog_title">Проблема с микрофоном</string>
+    <string name="error_dialog_message">Извините, Ваша модель телефона не поддерживается этим приложением.
+        Пожалуйста, будьте терпеливы и ждите новых релизов.
+        \n\nБудет здорово, если Вы не станете писать гневный отзыв на Google Play :)
+    </string>
+</resources>

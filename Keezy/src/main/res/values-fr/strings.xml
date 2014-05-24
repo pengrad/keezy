@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Keezy</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_done">Done</string>
+    <string name="error_dialog_title">Un problème avec le micro.</string>
+    <string name="error_dialog_message">Désolé, Votre modèle de téléphone n\'est pas pris en charge par cette
+        application. Garder son calme et d\'attendre pour les nouvelles versions.
+        \n\nIl serait très cool si vous n\'allez pas écrire en colère des commentaires sur le Google Play.
+    </string>
+</resources>

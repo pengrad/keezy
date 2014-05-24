@@ -3,7 +3,8 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_done">Done</string>
     <string name="error_dialog_title">Problem with Hardware</string>
-    <string name="error_dialog_message">Sorry, this App doesn\'t support your phone yet. Please, be patient and wait for
-        the new releases. \n\nIt would be very cool if you are not going to write me a bad review in the Google Play :)
+    <string name="error_dialog_message">Sorry, this App doesn\'t support your phone yet.
+        Keep calm and wait for the new releases.
+        \n\nIt would be very cool if you are not going to write angry review in the Google Play :)
     </string>
 </resources>
