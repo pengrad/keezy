@@ -33,7 +33,7 @@ public class AudioRecordManager implements RecordManager {
     }
 
     public void release() {
-        //nothing to do
+        stopRecord(null);
     }
 
     public static boolean isOK() {

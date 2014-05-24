@@ -124,6 +124,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onStop() {
         super.onStop();
         getPreferences(MODE_PRIVATE).edit().putInt(prefName, recordsState).commit();
+        endEdit();
         playManager.release();
         recordManager.release();
     }
