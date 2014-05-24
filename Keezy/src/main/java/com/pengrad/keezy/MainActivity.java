@@ -1,5 +1,7 @@
 package com.pengrad.keezy;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
@@ -50,7 +52,20 @@ public class MainActivity extends ActionBarActivity {
     @AfterViews
     protected void init() {
         if (!AudioRecordManager.isOK()) {
-            finish();
+            new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.error_dialog_title))
+                    .setMessage(getString(R.string.error_dialog_message))
+                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            finish();
+                        }
+                    })
+                    .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        public void onCancel(DialogInterface dialogInterface) {
+                            finish();
+                        }
+                    })
+                    .show();
         }
         fileExt = ".wav";
         prefName = "recordsState_v1.1 ";
