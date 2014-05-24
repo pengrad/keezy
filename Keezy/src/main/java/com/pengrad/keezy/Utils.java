@@ -13,8 +13,8 @@ public class Utils {
 
     public static void log(String text) {
 //        todo убирать из релиз-версии
-        if (text != null && !text.trim().equals(""))
-            Log.d("++++++", text);
+//        if (text != null && !text.trim().equals(""))
+//            Log.d("++++++", text);
     }
 
     public static void toast(Context context, String text) {
