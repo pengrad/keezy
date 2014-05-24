@@ -40,7 +40,7 @@ public class AudioRecordManager implements RecordManager {
 //        if(1==1) return false;
         if (RecordAudio.BUFFER_SIZE <= 0) return false;
         AudioRecord audioRecord = RecordAudio.makeAudioRecord();
-        return audioRecord.getState() != AudioRecord.STATE_UNINITIALIZED;
+        return audioRecord.getState() == AudioRecord.STATE_INITIALIZED;
     }
 
     private static class RecordAudio implements Runnable {
