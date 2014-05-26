@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Keezy</string>
+    <string name="app_name">ZeeTile</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_done">Done</string>
     <string name="error_dialog_title">Problem with Hardware</string>
