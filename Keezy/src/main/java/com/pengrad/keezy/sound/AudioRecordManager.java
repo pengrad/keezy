@@ -63,10 +63,17 @@ public class AudioRecordManager implements RecordManager {
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-            AudioRecord audioRecord = makeAudioRecord();
             List<byte[]> recordList = new ArrayList<byte[]>();
 
-            audioRecord.startRecording();
+            AudioRecord audioRecord = makeAudioRecord();
+            if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED) return;
+
+            try {
+                audioRecord.startRecording();
+            } catch (IllegalStateException e) {
+                return;
+            }
+
             while (!cancel) {
                 ByteBuffer bb = ByteBuffer.allocateDirect(BUFFER_SIZE);
                 int bufferReadResult = audioRecord.read(bb, BUFFER_SIZE);
